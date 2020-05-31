@@ -10,12 +10,12 @@ export default function Header() {
             <div className="row">
               <div className="col-sm-8 col-md-7 py-4">
                 <h4 className="text-white">About</h4>
-                <p className="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                <p className="text-muted">Animals CRUD App using MERN Stack. You can Create, Read, Update &amp; Delete animals.</p>
               </div>
               <div className="col-sm-4 offset-md-1 py-4">
                 <h4 className="text-white">Contact</h4>
                 <ul className="list-unstyled">
-                  <li><a href="#!" className="text-white">Follow on Instagram</a></li>
+                  <li><a href="https://www.instagram.com/IAmRC1" className="text-white">Follow on Instagram</a></li>
                   <li><a href="#!" className="text-white">Like on Facebook</a></li>
                 </ul>
               </div>
@@ -41,12 +41,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-      <section className="jumbotron text-center">
-        <div className="container">
-          <h1 className="title">Animals</h1>
-          <p className="lead text-muted">Animals CRUD App using MERN Stack. You can Create, Read, Update &amp; Delete animals.</p>
-        </div>
-      </section>
     </React.Fragment>
   )
 }
