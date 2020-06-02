@@ -2,6 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import bsCustomFileInput from 'bs-custom-file-input';
 
+const token = localStorage.getItem('x-auth-token')
+
 class Addanimal extends React.Component {
 
   state = {
@@ -25,9 +27,6 @@ class Addanimal extends React.Component {
       type: e.target.value
     })
   }
-  _onChangeHandlerImage = e => {
-    console.log('e.target.files[0]', e.target.files[0])
-  }
 
   _onSubmit = e => {
     e.preventDefault();
@@ -37,8 +36,8 @@ class Addanimal extends React.Component {
       image: this.state.image,
       description: this.state.description,
     }
-    axios.post('/animals/add', animal)
-    window.location = '/';
+    axios.post('/animals/add', animal, { headers: { 'x-auth-token' : token }})
+    window.location = '/main';
   }
 
 

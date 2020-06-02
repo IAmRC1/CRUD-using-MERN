@@ -2,6 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
+
+const token = localStorage.getItem('x-auth-token')
+
 class Main extends React.Component {
 
   state = {
@@ -12,7 +15,7 @@ class Main extends React.Component {
   };
 
   componentDidMount() {
-    axios.get('/animals')
+    axios.get('/animals', { headers: { 'x-auth-token': token }})
       .then(res => res.data)
       .then(data => {
         if(data.length){
@@ -26,7 +29,7 @@ class Main extends React.Component {
   }
 
   _deleteAnimal = (id) => {
-    axios.delete(`/animals/${id}`)
+    axios.delete(`/animals/${id}`, { headers: { 'x-auth-token' : token }})
     .then(res => console.log(res.data))
     this.setState({
       animals: this.state.animals.filter(animal => animal._id !== id)

@@ -1,6 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 
+const token = localStorage.getItem('x-auth-token')
+
 class Updateanimal extends React.Component {
 
   state = {
@@ -11,7 +13,7 @@ class Updateanimal extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(`/animals/${this.props.match.params.id}`)
+    axios.get(`/animals/${this.props.match.params.id}`, { headers: { 'x-auth-token' : token }})
       .then(res => res.data)
       .then(data => {
         this.setState({
@@ -40,13 +42,13 @@ class Updateanimal extends React.Component {
       description: this.state.description,
     }
     axios.post(`/animals/update/${this.props.match.params.id}`, animal)
-    window.location = '/';
+    window.location = '/main';
   }
 
 
   render(){
     return (
-      <main className="container">
+      <main className="container py-5">
         <form onSubmit={this._onSubmit}>
           <div className="form-row">
             <div className="form-group col-md-4">
