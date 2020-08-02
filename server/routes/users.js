@@ -1,57 +1,22 @@
 const router = require('express').Router();
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const passport = require('passport');
+const controller = require('../controllers/users.controllers');
+const helper = require('../utils/helper');
 
-let User = require('../models/user.model');
+router.post('/register', controller.register);
 
+router.post('/login', passport.authenticate('local', { successRedirect: '/api/v1/animals', failureRedirect: '/api/v1/users/login' }), controller.login);
 
-router.route('/').post((req,res) => {
-  
-  if(!req.body.email || !req.body.password){
-    return res.status(422).json({ message: "Please enter all fields" })
-  }
+// router.post('/:id', controller.forgotPassword);
 
-  User.findOne({email: req.body.email})
-  .then(user => {
-    if(user) return res.status(409).json({ message: "User already exists" })
+// router.put('/:id', controller.changePassword);
 
-    const newUser = new User({
-      email: req.body.email,
-      password: req.body.password
-    })
+// router.delete('/:id', controller.deleteAccount);
 
-    //Create Salt & Hash
-    const saltRounds = 10;
+router.get('/logout', controller.logout);
 
-    bcrypt.genSalt(saltRounds, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (err, hash) => {
-          // Store hash in your password DB.
-          if(err) throw err;
-          newUser.password = hash;
-          newUser.save()
-          .then(user => {
-            jwt.sign({
-              id: user.id
-            },
-              '123test456',
-            { expiresIn: 60*60 },
-            (err, token) => {
-              if(err) throw err;
-              res.json({
-                token: token,
-                user: {
-                  id: user.id,
-                  email: user.email
-                }
-              })
-            }
-          )    
-        })
-      });
-    })
-  })
-  .catch(err => res.status(400).json({ message: "Bad request" }))
-})
+router.get('/:id', helper.ensureAuthenticated, controller.getUser);
 
+router.get('/', helper.ensureAuthenticated, controller.getAllUser);
 
-module.exports = router
+module.exports = router;

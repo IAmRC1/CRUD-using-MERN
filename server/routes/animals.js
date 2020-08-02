@@ -1,54 +1,15 @@
 const router = require('express').Router();
-let Animal = require('../models/animal.model');
-const auth = require('../middleware/auth.middleware')
+const controller = require('../controllers/animals.controllers');
+const helper = require('../utils/helper');
 
-router.get('/', auth, (req,res) => {
-  Animal.find()
-  .sort({name: 1})
-  .then(animals => res.json(animals))
-  .catch(err => res.status(400).json('Error: ',err))
-})
+router.get('/', helper.ensureAuthenticated, controller.getAll);
 
-router.post('/add', auth, (req,res) => {
-  const name = req.body.name;
-  const description = req.body.description;
-  const image = req.body.image;
-  const type = req.body.type;
+router.post('/', helper.ensureAuthenticated, controller.createOne);
 
-  const newAnimal = new Animal({ name, description, image, type });
+router.get('/:id', helper.ensureAuthenticated, controller.getOne);
 
-  newAnimal.save()
-  .then(() => res.json('Animal Saved'))
-  .catch(err => res.status(400).json('Error: ',err))
-})
+router.put('/:id', helper.ensureAuthenticated, controller.updateOne);
 
-router.route('/:id').get((req,res) => {
-  Animal.findById(req.params.id)
-  .then(animal => res.json(animal))
-  .catch(err => res.status(400).json('Error: ',err))
-})
+router.delete('/:id', helper.ensureAuthenticated, controller.deleteOne);
 
-router.route('/update/:id').post((req,res) => {
-  Animal.findById(req.params.id)
-  .then(animal => {
-    animal.name = req.body.name;
-    animal.description = req.body.description;
-    animal.image = req.body.image;
-    animal.type = req.body.type;
-
-    animal.save()
-    .then(() => res.json('Animal Updated'))
-    .catch(err => res.status(400).json('Error: ',err))
-  })
-
-  .catch(err => res.status(400).json('Error: ',err))
-})
-
-router.delete('/:id', auth, (req,res) => {
-  Animal.findByIdAndDelete(req.params.id)
-  .then(animals => res.json('Animal Deleted'))
-  .catch(err => res.status(400).json('Error: ',err))
-})
-
-
-module.exports = router
+module.exports = router;
