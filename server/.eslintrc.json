@@ -27,7 +27,7 @@
     "implicit-arrow-linebreak": 2,
     "comma-dangle": 2,
     "no-trailing-spaces": 2,
-    "no-console": 2,
+    "no-console": 0,
     "no-unused-vars": 2
   }
 }

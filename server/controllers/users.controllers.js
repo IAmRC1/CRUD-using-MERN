@@ -1,9 +1,12 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 const helper = require('../utils/helper');
-const passportInitialize = require('../passport-config');
+const passportInitialize = require('../utils/passport-config');
 
 exports.register = (req, res) => {
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (user) res.status(400).json(helper.errorResponse(400, true, err, 'User already exists!'));
+  });
   bcrypt.hash(req.body.password, 10, (err, hash) => {
     const newUser = new User({ email: req.body.email, password: hash });
     newUser.save()
