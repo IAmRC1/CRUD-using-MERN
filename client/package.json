@@ -1,13 +1,14 @@
 {
-  "name": "CRUD-MERN",
+  "name": "crud-mern",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
     "axios": "^0.19.2",
     "bs-custom-file-input": "^1.3.4",
+    "formik": "^2.1.5",
+    "notyf": "^3.9.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-notifications-component": "^2.4.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "1.0.17"
   },

@@ -1,7 +1,7 @@
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local');
-const User = require('../models/user.model');
+const User = require('../models/auth.model');
 
 const initialize = passport.use(new LocalStrategy({ usernameField: 'email' }, (username, password, done) => {
   User.findOne({ email: username }, (err, user) => {

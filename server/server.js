@@ -22,9 +22,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Database Connection
 connectDB();
 
-app.use('/', (req, res) => res.json({ message: 'Please add /api/v1/ at the end' }));
 app.use('/api/v1', require('./routes/index'));
 
 const port = 5000;
