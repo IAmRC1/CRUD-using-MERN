@@ -1,11 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { default as Bug } from '../assets/svg/bug.svg';
 
 class Header extends React.Component {
 
   _logOut = () => {
-    localStorage.removeItem('x-auth-token')
-    this.props.history.push('/signin')
+    localStorage.removeItem('token')
+    this.props.history.push('/login')
   }
 
   render(){
@@ -31,19 +32,15 @@ class Header extends React.Component {
           </div>
           <div className="navbar navbar-dark bg-dark shadow-sm">
             <div className="container d-flex justify-content-between">
-              <Link to={localStorage.getItem('x-auth-token') ? "/main" : "#"} className="navbar-brand d-flex align-items-center">
-                <svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor">
-                    <path fillRule="evenodd" d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5v7h-1v-7a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5v1A1.5 1.5 0 0 1 0 10.5v-7zM4.5 11h6v1h-6v-1z"/>
-                    <path fillRule="evenodd" d="M11 5h2.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5h-1v-1h1a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4.5h-1V5zm-8 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-                    <path fillRule="evenodd" d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 1a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-                  </svg>
-                  <strong className="pl-2">Animals</strong>
+              <Link to={localStorage.getItem('token') ? "/home" : "#"} className="navbar-brand d-flex align-items-center mr-0">
+                <img src={Bug} alt="bug" />
+                <strong className="pl-2">Animals</strong>
               </Link>
-              {this.props.location.pathname === '/main' && <div className="d-flex align-items-center nav-btn">
+              {this.props.location.pathname === '/home' && <div className="d-flex align-items-center nav-btn">
                 <Link to="/add">Add Animal</Link>
               </div>}
               <div className="d-flex align-items-center">
-                {this.props.location.pathname === '/main' && 
+                {this.props.location.pathname === '/home' && 
                 <div className="d-flex align-items-center nav-btn mr-3">
                   <a role="button" className="btn btn-transparent text-white" onClick={this._logOut}>Sign Out</a>
                 </div>

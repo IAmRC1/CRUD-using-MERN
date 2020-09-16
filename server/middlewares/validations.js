@@ -18,8 +18,7 @@ const validationType = (type) => {
         .withMessage('Password is required')
         .bail()
         .isLength({ min: 6 })
-        .withMessage('Password must be 6 chars long')
-        .bail(),
+        .withMessage('Password must be 6 chars long'),
     ];
   case 'login':
     return [
@@ -32,8 +31,28 @@ const validationType = (type) => {
         .withMessage('Password is required')
         .bail()
         .isLength({ min: 6 })
-        .withMessage('Password must be 6 chars long')
+        .withMessage('Password must be 6 chars long'),
+    ];
+  case 'add-animal':
+    return [
+      check('name').trim().not().isEmpty()
+        .withMessage('Name is required')
+        .bail()
+        .isLength({ min: 3, max: 12 })
+        .withMessage('Name must be 3-12 chars long'),
+      check('description').trim().not().isEmpty()
+        .withMessage('Description is required')
+        .bail()
+        .isLength({ min: 30, max: 100 })
+        .withMessage('Description must be 30-100 chars long')
         .bail(),
+      check('image').trim().not().isEmpty()
+        .withMessage('Image is required'),
+      check('category').trim().not().isEmpty()
+        .withMessage('Category is required')
+        .bail()
+        .isLength({ min: 3, max: 12 })
+        .withMessage('Category must be 3-12 chars long'),
     ];
   default:
     return [];

@@ -3,6 +3,11 @@ body {
   padding: 0;
   font-family: 'Nunito', sans-serif;
 }
+@media (min-width: 768px) {
+  .w-md-50{
+    width: 50% !important;
+  }
+}
 .title{
   font-family: 'Bangers', sans-serif;
 }
@@ -17,6 +22,9 @@ body {
 }
 .nav-btn a:last-child{
   margin-right: 0;
+}
+.navbar-toggler:focus{
+  outline: none;
 }
 .jumbotron {
   padding-top: 3rem;
@@ -47,7 +55,7 @@ footer p {
   margin-bottom: 0.25rem;
 }
 
-/*Sign in form*/
+/*Auth forms*/
 .form-signup {
   width: 100%;
   max-width: 330px;
@@ -64,24 +72,24 @@ footer p {
 .form-signup .form-control:focus {
   z-index: 2;
 }
-.form-signup #inputEmail:focus, .form-signup #inputConfirmPassword:focus {
+.form-signup #registerEmail:focus, .form-signup #registerConfirmPassword:focus, .form-signup #loginEmail:focus{
   z-index: 100;
 }
-.form-signup #inputName{
+.form-signup #registerName, .form-signup #loginEmail{
   margin-bottom: -1px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
-.form-signup #inputEmail, .form-signup #inputPassword{
+.form-signup #registerEmail, .form-signup #registerPassword{
   border-radius: 0;
   margin-bottom: -1px;
 }
-.form-signup #inputConfirmPassword{
+.form-signup #registerConfirmPassword, .form-signup #loginPassword{
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   margin-bottom: 1rem;
 }
-.form-signup .error{ 
+.form-signup .error, .form-create .error{ 
   margin: 0;
   color: #cd5c5c;
 }
@@ -99,9 +107,48 @@ footer p {
   transition: background-color 0.3s ease-in-out;
   z-index: 99;
 }
+.form-signup.login-form .toggleView{
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
 .form-signup .toggleView:hover{ 
   background-color: #efefef;
 }
 .form-signup .toggleView input{
   display: none;
+}
+
+/*Home Page*/
+.album .card{
+  transition: box-shadow 0.4s ease-in-out;
+  cursor: pointer;
+}
+.album .card:hover{ 
+  box-shadow: 0 0 1px #ccc, 0 10px 20px #ccc;
+}
+
+.album .card .card-body .card-text{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.album .card figure .author{
+  position: absolute;
+  top: -52px;
+  left: 0;
+  right: 0;
+  background: linear-gradient(#2f7eac, #992c8a);
+  padding: 1rem;
+  color: #cecece;
+  text-align: center;
+  transition: all 0.4s ease-in-out;
+}
+
+.album .card figure{
+  overflow: hidden;
+}
+
+.album .card:hover figure .author{
+  top: 0;
 }

@@ -8,10 +8,10 @@ exports.errorResponse = (status = 400, error = true, message, data) => ({
 
 exports.ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
-    console.log('isauth');
+    // console.log('Successfully authenticated');
     next();
   } else {
-    console.log('not auth');
+    // console.log('Could not authenticate');
     res.redirect('/api/v1/login');
   }
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Redirect } from "react-router-dom";
 import SignUp from './components/signup';
 import SignIn from './components/signin';
 import Header from './defaults/header';
@@ -13,13 +13,13 @@ function App () {
   return (
     <BrowserRouter>
       <Route path="/" component={Header} />
-      <Route path="/" exact component={SignUp} />
-      <Route path="/signin" component={SignIn} />
-      <Route path="/main" component={Main} />
+      <Route path="/register" component={SignUp} />
+      <Route path="/login" component={SignIn} />
+      <Route path="/home" component={Main} />
       <Route path="/add" component={Addanimal} />
       <Route path="/update/:id" component={Updateanimal} />
+      <Redirect to="/home" />
       <Footer />
-      
     </BrowserRouter>
   );
 }

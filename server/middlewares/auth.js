@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken');
+const config = require('config');
 
+// eslint-disable-next-line consistent-return
 const auth = async (req, res, next) => {
-  const token = req.header('x-auth-token');
-  if (!token) return res.status(401).json({ msg: 'no token found' });
+  const token = req.header('token');
+  if (!token) return res.status(401).json({ error: true, message: 'No token found.' });
   try {
-    const decoded = jwt.verify(token, 'qweasdqwe');
+    const decoded = await jwt.verify(token, config.get('jwtSecret'));
     req.user = decoded;
     next();
   } catch (e) {
-    res.status(400).json({ msg: 'no token found' });
+    res.status(400).json({ error: true, message: 'Error in verifying token!' });
   }
 };
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
-import { alertInfo } from '../utils/helper'
+import { Link, Redirect, } from 'react-router-dom'
+import { alertInfo, isAutheticated, } from '../utils/helper'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { default as EyeOpen } from '../assets/svg/eye-open.svg';
 import { default as EyeClosed } from '../assets/svg/eye-closed.svg';
@@ -53,23 +53,23 @@ class SignUp extends React.Component {
     .then(data => {
       if(!data.error){
         alertInfo('success', 'Successfull Registration!')
-        return this.props.history.push('/signin')
+        return this.props.history.push('/login')
       }
     })
     .catch(err => {
       const { errors } = err.response.data
       errors.map(err => {
         const keys = Object.keys(err)
-        alertInfo('error', err[keys])
+        return alertInfo('error', err[keys])
       })
     })
    }
 
   _togglePasswordView = () => {
     this.setState({ isPasswordVisible: !this.state.isPasswordVisible })
-    const password = document.getElementById('inputPassword');
-    const confirmPassword = document.getElementById('inputConfirmPassword');
-    if(password.type == 'password') {
+    const password = document.getElementById('registerPassword');
+    const confirmPassword = document.getElementById('registerConfirmPassword');
+    if(password.type === 'password') {
       password.type = 'text';
       confirmPassword.type = 'text';
     } else {
@@ -79,32 +79,35 @@ class SignUp extends React.Component {
   }
 
   render(){
+    if(isAutheticated()){
+      return <Redirect to="/home" />
+    }
     return (
       <Formik
        initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
        validate={this._validate}
        onSubmit={(values) => this._submitForm(values)}>
        {({ isSubmitting, values }) => (
-        <Form noValidate className="form-signup py-5">
-          <h1 className="h3 mb-3 text-center">REGISTER</h1>
+        <Form noValidate className="form-signup py-5 register-form">
+          <h1 className="h3 mb-3 text-center text-uppercase">Register</h1>
           <ErrorMessage name="name" component="div" className="error" />
           <ErrorMessage name="email" component="div" className="error" />
           <ErrorMessage name="password" component="div" className="error" />
           <ErrorMessage name="confirmPassword" component="div" className="error" />
-          <Field type="text" id="inputName" className="form-control floating-input" placeholder="John12" name="name" />
-          <Field type="email" id="inputEmail" className="form-control" placeholder="johndoe@gmail.com" name="email" />
+          <Field type="text" id="registerName" className="form-control floating-input" placeholder="John12" name="name" />
+          <Field type="email" id="registerEmail" className="form-control" placeholder="johndoe@gmail.com" name="email" />
           <div className="position-relative">
-            <Field type="password" autoComplete={'off'} id="inputPassword" className="form-control" placeholder="Password" name="password" />
-            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={this.state.isPasswordVisible} onChange={this._togglePasswordView} /><img src={this.state.isPasswordVisible? EyeClosed : EyeOpen} /></label>}
+            <Field type="password" autoComplete={'off'} id="registerPassword" className="form-control" placeholder="Password" name="password" />
+            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={this.state.isPasswordVisible} onChange={this._togglePasswordView} /><img src={this.state.isPasswordVisible? EyeClosed : EyeOpen} alt={'eye'} /></label>}
           </div>
-          <Field type="password" autoComplete={'off'} id="inputConfirmPassword" className="form-control" placeholder="Confirm Password" name="confirmPassword" />
+          <Field type="password" autoComplete={'off'} id="registerConfirmPassword" className="form-control" placeholder="Confirm Password" name="confirmPassword" />
           <button 
             className="btn btn-lg btn-primary btn-block" 
             type="submit" 
             disabled={isSubmitting || Object.values(values).includes("")}>
               {`Submit${isSubmitting?'ing':''}`}
           </button>
-          <p className="text-center text-muted mt-3">Already have an account? <Link to="/signin">Login here</Link></p>
+          <p className="text-center text-muted mt-3">Already have an account? <Link to="/login">Login here</Link></p>
         </Form>)}
       </Formik>
     )

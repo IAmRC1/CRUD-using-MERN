@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const controller = require('../controllers/auth.controllers');
-const helper = require('../utils/helper');
+// const helper = require('../utils/helper');
+// const auth = require('../middlewares/auth');
 const { validationType, validate } = require('../middlewares/validations');
 
 router.post('/register', validationType('register'), validate, controller.register);
@@ -13,8 +14,8 @@ router.post('/login', validationType('login'), validate, controller.login);
 
 // router.delete('/delete-account', controller.deleteAccount);
 
-// router.get('/:id', helper.ensureAuthenticated, controller.getUser);
+// router.get('/:id', auth, helper.ensureAuthenticated, controller.getUser);
 
-// router.get('/', helper.ensureAuthenticated, controller.getAllUser);
+// router.get('/', auth, helper.ensureAuthenticated, controller.getAllUser);
 
 module.exports = router;

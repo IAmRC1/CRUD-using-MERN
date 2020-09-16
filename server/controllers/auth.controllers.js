@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const config = require('config');
 const User = require('../models/auth.model');
 const helper = require('../utils/helper');
 
@@ -17,8 +18,10 @@ exports.register = (req, res) => {
 exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findOne({ email }, (error, user) => {
-    if (!user) res.status(400).json(helper.errorResponse(400, true, 'Non-Existing Error', 'User doesn\'t exists!'));
-    bcrypt.compare(password, user.password)
+    if (!user) {
+      return res.status(400).json(helper.errorResponse(400, true, 'Non-Existing Error', 'User doesn\'t exists!'));
+    }
+    return bcrypt.compare(password, user.password)
       .then((result) => {
         if (!result) res.status(400).json(helper.errorResponse(400, true, 'Invalid Password', 'Incorrect password entered!'));
         const payload = {
@@ -27,15 +30,10 @@ exports.login = (req, res) => {
             id: user._id,
           },
         };
-        jwt.sign(
-          payload,
-          'qweasdqwe',
-          { expiresIn: 360000 },
-          (err, token) => {
-            if (err) throw err;
-            res.status(200).json(helper.successResponse(200, true, 'Successfully logged in!', token));
-          },
-        );
+        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: 360000 }, (err, token) => {
+          if (err) res.status(400).json(helper.errorResponse(400, true, 'Token Error', 'Error in token'));
+          res.status(200).json(helper.successResponse(200, false, 'Successfully logged in!', token));
+        });
       });
   });
 };
