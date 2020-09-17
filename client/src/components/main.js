@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, Redirect } from 'react-router-dom'
 import axios from 'axios'
-import { alertInfo, isAutheticated } from '../utils/helper'
+import { alertInfo, isAutheticated, timeAgo, } from '../utils/helper'
 
 const token = window.localStorage.getItem('token')
 
@@ -9,9 +9,13 @@ class Main extends React.Component {
 
   state = {
     animals: [],
-    search: "qwe",
+    search: "Search string",
     type: ""
   };
+
+  _handleChange = e => {
+    this.setState({[e.target.name]: e.target.value})
+  }
 
   componentDidMount() {
     axios.get('/api/v1/animals', { headers: { 'token': token }})
@@ -34,7 +38,7 @@ class Main extends React.Component {
         })
       }
     })
-    .catch(err => alertInfo('error', 'Could not delete Animal'))
+    .catch(err => alertInfo('error', 'Could not delete animal'))
   }
 
   render() {
@@ -65,19 +69,17 @@ class Main extends React.Component {
               {this.state.animals && this.state.animals.map(animal => (
                 <div key={animal._id} className="col-xs-12 col-sm-6 col-lg-4 col-xl-3">
                   <div className="card mb-4">
-                    <figure className="position-relative m-0">
-                      <img src={require('../assets/images/yQUnPbU9sIg.jpg')} className="card-img-top img img-fluid" alt="animal" />
-                      <h6 className="author m-0">{animal.submittedBy && animal.submittedBy.name}</h6>
-                    </figure>
+                  <img crossOrigin="anonymous" src={animal.image} className="card-img-top img img-fluid" alt={animal.image} />
                     <div className="card-body">
-                      <h4 className="col-12 d-inline-block text-truncate p-0 m-0">{animal.name}</h4>
+                      <h4 className="col-12 d-inline-block text-truncate font-weight-bold p-0 m-0">{animal.name}</h4>
+                      <h6 className="creator small">{animal.submittedBy && animal.submittedBy.name} &#8728; {timeAgo(animal.createdAt)}</h6>
                       <p className="card-text">{animal.description}</p>
                       <div className="d-flex justify-content-between align-items-center">
                         <div className="btn-group">
-                          <Link to={`/add/${animal._id}`} className="btn btn-sm btn-outline-secondary">Edit</Link>
+                          <Link to={`/add/${animal._id}`} className="btn btn-sm btn-outline-info">Edit</Link>
                           <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => this._deleteAnimal(animal._id)}>Delete</button>
                         </div>
-                        <span className="badge badge-info p-2 col-5 d-inline-block text-truncate">{animal.category}</span>
+                        <span className="badge badge-primary p-2 col-5 d-inline-block text-truncate">{animal.category}</span>
                       </div>
                     </div>
                   </div>

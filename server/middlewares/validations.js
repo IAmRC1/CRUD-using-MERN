@@ -1,4 +1,4 @@
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, checkSchema } = require('express-validator');
 
 const validationType = (type) => {
   switch (type) {
@@ -38,21 +38,30 @@ const validationType = (type) => {
       check('name').trim().not().isEmpty()
         .withMessage('Name is required')
         .bail()
-        .isLength({ min: 3, max: 12 })
-        .withMessage('Name must be 3-12 chars long'),
+        .isLength({ min: 3, max: 20 })
+        .withMessage('Name must be 3-20 chars long'),
       check('description').trim().not().isEmpty()
         .withMessage('Description is required')
         .bail()
         .isLength({ min: 30, max: 100 })
         .withMessage('Description must be 30-100 chars long')
         .bail(),
-      check('image').trim().not().isEmpty()
-        .withMessage('Image is required'),
       check('category').trim().not().isEmpty()
         .withMessage('Category is required')
         .bail()
-        .isLength({ min: 3, max: 12 })
-        .withMessage('Category must be 3-12 chars long'),
+        .isLength({ min: 3, max: 20 })
+        .withMessage('Category must be 3-20 chars long'),
+      // checkSchema({
+      //   image: {
+      //     // Custom validators
+      //     custom: {
+      //       options: (value, { req, location, path }) => {
+      //         console.log('value', value);
+      //         return value + req.body.foo + location + path;
+      //       },
+      //     },
+      //   },
+      // }),
     ];
   default:
     return [];

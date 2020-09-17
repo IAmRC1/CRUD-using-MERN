@@ -3,6 +3,10 @@ body {
   padding: 0;
   font-family: 'Nunito', sans-serif;
 }
+.cursor-pointer{
+  cursor: pointer !important;
+}
+
 @media (min-width: 768px) {
   .w-md-50{
     width: 50% !important;
@@ -133,22 +137,6 @@ footer p {
   text-overflow: ellipsis;
 }
 
-.album .card figure .author{
-  position: absolute;
-  top: -52px;
-  left: 0;
-  right: 0;
-  background: linear-gradient(#2f7eac, #992c8a);
-  padding: 1rem;
-  color: #cecece;
-  text-align: center;
-  transition: all 0.4s ease-in-out;
-}
-
-.album .card figure{
-  overflow: hidden;
-}
-
-.album .card:hover figure .author{
-  top: 0;
+.album .card .card-img-top{
+  height: 12rem;
 }

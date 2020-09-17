@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
   if (!token) return res.status(401).json({ error: true, message: 'No token found.' });
   try {
     const decoded = await jwt.verify(token, config.get('jwtSecret'));
-    req.user = decoded;
+    req.user = decoded.user;
     next();
   } catch (e) {
     res.status(400).json({ error: true, message: 'Error in verifying token!' });

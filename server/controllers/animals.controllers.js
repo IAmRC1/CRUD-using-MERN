@@ -3,10 +3,12 @@ const helper = require('../utils/helper');
 
 exports.createOne = (req, res) => {
   const {
-    name, description, image, category,
+    name, description, category,
   } = req.body;
+  const { path } = req.file;
+  const user = req.user.id;
   const newAnimal = new Animal({
-    name, description, image, category, submittedBy: req.user.user.id,
+    name, description, category, submittedBy: user, image: path,
   });
   newAnimal.save()
     .then((animal) => res.status(201).json(helper.successResponse(201, false, 'Animal created successfully!', animal)))
@@ -15,14 +17,19 @@ exports.createOne = (req, res) => {
 
 exports.getAll = (req, res) => {
   Animal.find({})
-    .sort({ createdAt: 1 })
-    .populate('submittedBy')
+    .sort({ createdAt: -1 })
+    .select('-__v')
+    .populate({
+      path: 'submittedBy',
+      select: 'name email',
+    })
     .exec((err, animals) => res.status(200).json(helper.successResponse(200, false, 'All animals fetched successfully!', animals)));
 };
 
 exports.getOne = (req, res) => {
   const { id } = req.params;
   Animal.findById(id)
+    .select('-__v')
     .then((animal) => res.status(200).json(helper.successResponse(200, false, 'Animal fetched successfully!', animal)))
     .catch((err) => res.status(400).json(helper.errorResponse(400, true, 'Some error happened', err)));
 };
