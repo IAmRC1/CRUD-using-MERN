@@ -1,32 +1,48 @@
 import React from 'react'
-import { Link, Redirect } from 'react-router-dom'
+import { Redirect, } from 'react-router-dom'
 import axios from 'axios'
-import { alertInfo, isAutheticated, timeAgo, } from '../utils/helper'
+import { alertInfo, isAutheticated, } from '../utils/helper'
+import { Card, Pagination, } from '../containers'
+import { debounce } from 'lodash'
 
-const token = window.localStorage.getItem('token')
+const token = localStorage.getItem('token')
 
 class Main extends React.Component {
 
   state = {
     animals: [],
-    search: "Search string",
-    type: ""
+    searchVal: "",
+    searchValError: ""
   };
 
-  _handleChange = e => {
-    this.setState({[e.target.name]: e.target.value})
+  componentDidMount() {
+    this._getData();
   }
 
-  componentDidMount() {
-    axios.get('/api/v1/animals', { headers: { 'token': token }})
-      .then(res => res.data)
-      .then(data => {
-        if(!data.error){
-          this.setState({ animals: data.data })
-          return alertInfo('success', 'Data fetched successfully')
-        }
-      })
-      .catch(err => alertInfo('error', err.response.data));
+  _handleChange = debounce(searchVal => {
+    this.setState({ searchVal }, () => {
+      if(this.state.searchVal.length === 0 || this.state.searchVal.length > 2){
+        this.setState({ searchValError: "" });
+        this._getData();
+      } else if(this.state.searchVal.length > 0 || this.state.searchVal.length < 3) {
+        this.setState({ searchValError: "Please type atleast 3 words to search."})
+      }
+    })
+  }, 600, { maxWait: 1000 });
+
+  _getData = () => {
+    if(isAutheticated()){    
+      axios.get(`/api/v1/animals?search=${this.state.searchVal}`, { headers: { 'token': token }})
+        .then(res => res.data)
+        .then(data => {
+          if(!data.error){
+            this.setState({ animals: data.data }, () => {
+              return alertInfo('success', 'Data fetched successfully')
+            })
+          }
+        })
+        .catch(err => alertInfo('error', err.response.data.message));
+    }
   }
 
   _deleteAnimal = (id) => {
@@ -42,50 +58,40 @@ class Main extends React.Component {
   }
 
   render() {
-    if(!isAutheticated()){
+    const { animals, searchVal, searchValError } = this.state;
+    if(token === null){
+      return <Redirect to="/register" />
+    } else if(!isAutheticated()){
       return <Redirect to="/login" />
     }
     return (
       <main>
         <div className="album py-5 bg-light">
           <div className="container">
-            <div className="input-group w-100 w-md-50 py-3 ml-auto">
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Search" 
-                name="search"
-                value={this.state.search}
-                onChange={this._handleChange}
-              />
-              <select className="custom-select" name="type" value={this.state.type} onChange={this._handleChange} >
-                <option value="">Tag</option>
-                <option value="cat">Cat</option>
-                <option value="dog">Dog</option>
-                <option value="lion">Lion</option>
-              </select>
+            <div className={`${searchValError.length < 3 ? "d-flex flex-column align-items-start py-3" : "pb-3"}`}>
+              {searchValError && <p className="error mb-0">{searchValError}</p>}
+              <div className="input-group w-100 w-md-50 ml-auto">
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  placeholder="Search Animals" 
+                  name="searchVal"
+                  maxLength="15"
+                  value={searchVal}
+                  onChange={e => this._handleChange(e.target.value)}
+                />
+              </div>
             </div>
             <div className="row">
-              {this.state.animals && this.state.animals.map(animal => (
-                <div key={animal._id} className="col-xs-12 col-sm-6 col-lg-4 col-xl-3">
-                  <div className="card mb-4">
-                  <img crossOrigin="anonymous" src={animal.image} className="card-img-top img img-fluid" alt={animal.image} />
-                    <div className="card-body">
-                      <h4 className="col-12 d-inline-block text-truncate font-weight-bold p-0 m-0">{animal.name}</h4>
-                      <h6 className="creator small">{animal.submittedBy && animal.submittedBy.name} &#8728; {timeAgo(animal.createdAt)}</h6>
-                      <p className="card-text">{animal.description}</p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div className="btn-group">
-                          <Link to={`/add/${animal._id}`} className="btn btn-sm btn-outline-info">Edit</Link>
-                          <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => this._deleteAnimal(animal._id)}>Delete</button>
-                        </div>
-                        <span className="badge badge-primary p-2 col-5 d-inline-block text-truncate">{animal.category}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {animals && animals.map(animal => (
+                <Card 
+                  key={animal._id} 
+                  animal={animal} 
+                  handleDelete={(id) => this._deleteAnimal(id)}
+                />
               ))}
             </div>
+            <Pagination />
           </div>
         </div>
       </main>

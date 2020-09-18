@@ -39,7 +39,7 @@ class SignIn extends React.Component {
     .then(data => {
       if(!data.error){
         alertInfo('success', 'Successfully Logged In!')
-        window.localStorage.setItem('token', data.data)
+        localStorage.setItem('token', data.data)
         setSubmitting(false);
         return this.props.history.push('/home')
       }

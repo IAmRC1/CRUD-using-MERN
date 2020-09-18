@@ -9,10 +9,10 @@ router.get('/', auth, controller.getAll);
 
 router.post('/', auth, imageParser, validationType('add-animal'), validate, controller.createOne);
 
-router.get('/:id', auth, helper.ensureAuthenticated, controller.getOne);
+router.get('/:id', auth, controller.getOne);
 
-router.put('/:id', auth, helper.ensureAuthenticated, controller.updateOne);
+router.put('/:id', auth, controller.updateOne);
 
-router.delete('/:id', auth, helper.ensureAuthenticated, controller.deleteOne);
+router.delete('/:id', auth, controller.deleteOne);
 
 module.exports = router;

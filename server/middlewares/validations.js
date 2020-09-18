@@ -43,8 +43,8 @@ const validationType = (type) => {
       check('description').trim().not().isEmpty()
         .withMessage('Description is required')
         .bail()
-        .isLength({ min: 30, max: 100 })
-        .withMessage('Description must be 30-100 chars long')
+        .isLength({ min: 30, max: 250 })
+        .withMessage('Description must be 30-250 chars long')
         .bail(),
       check('category').trim().not().isEmpty()
         .withMessage('Category is required')

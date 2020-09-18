@@ -19,6 +19,8 @@ const alertInfo = (type, message) => {
       return notyf.success(message);
     case 'error':
       return notyf.error(message);
+    default:
+    return;
   }
 }
 
@@ -33,6 +35,18 @@ const inputTextArea = ({ field, form, ...props }) => (
   </React.Fragment>
 );
 
+const inputFile = ({ field, form, ...props }) => (
+  <div className="input-group">
+    <div className="custom-file">
+      <input type="file" className="custom-file-input cursor-pointer" id="customFile" onChange={props.handleChange} />
+      <label className={`custom-file-label ${props.label.includes('.') ? "image-label" : ""}`} htmlFor="customFile" data-browse="Browse">{props.label}</label>
+    </div>
+    <div className="input-group-append">
+      <button className="btn btn-secondary" type="button" onClick={props.removeFile} disabled={!field.value} style={{ color: "#495057", backgroundColor: "#e9ecef", borderColor: "rgb(206, 212, 218)" }}>Reset</button>
+    </div>
+  </div>
+)
+
 export { 
-  setAuthToken, alertInfo, isAutheticated, timeAgo, inputTextArea,
+  setAuthToken, alertInfo, isAutheticated, timeAgo, inputTextArea, inputFile,
 }

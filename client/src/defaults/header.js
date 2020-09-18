@@ -1,53 +1,79 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { isAutheticated } from '../utils/helper'
 import { default as Bug } from '../assets/svg/bug.svg';
+import { default as SignOut } from '../assets/svg/signout.svg';
+import { default as Sun } from '../assets/svg/sun.svg';
+import { default as Moon } from '../assets/svg/moon.svg';
+import { default as Person } from '../assets/svg/person.svg';
+import { default as Plus } from '../assets/svg/plus.svg';
+import { default as Expand } from '../assets/svg/expand.svg';
+import { default as Shrink } from '../assets/svg/shrink.svg';
+
+const darkmode = () => localStorage.getItem('darkmode') ? true : false
 
 class Header extends React.Component {
+
+  state = {
+    isFullScreen: false
+  }
+
+  componentDidMount(){
+    this.handleNav();
+  }
+
+  handleNav = () => {
+    let prevScrollposition = window.pageYOffset;
+    window.onscroll = () => {
+      let currentScrollPos = window.pageYOffset;
+      if (prevScrollposition >= currentScrollPos) {
+        document.getElementById("navbarMain").style.top = "0";
+        document.getElementById("navbarMain").classList.add("shadow-lg")
+      } else {
+        document.getElementById("navbarMain").style.top = "-60px";
+        document.getElementById("navbarMain").classList.remove("shadow-lg")
+      }
+      prevScrollposition = currentScrollPos;
+    }
+  }
 
   _logOut = () => {
     localStorage.removeItem('token')
     this.props.history.push('/login')
+  }
+  
+  _toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      this.setState({ isFullScreen : true })
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen(); 
+      this.setState({ isFullScreen : false })
+    }
   }
 
   render(){
     return (
       <React.Fragment>
         <header>
-          <div className="collapse bg-dark" id="navbarHeader">
-            <div className="container">
-              <div className="row">
-                <div className="col-sm-8 col-md-7 py-4">
-                  <h4 className="text-white">About</h4>
-                  <p className="text-muted">Animals CRUD App using MERN Stack. You can Create, Read, Update &amp; Delete animals.</p>
-                </div>
-                <div className="col-sm-4 offset-md-1 py-4">
-                  <h4 className="text-white">Contact</h4>
-                  <ul className="list-unstyled">
-                    <li><a href="https://www.instagram.com/IAmRC1" className="text-white">Follow on Instagram</a></li>
-                    <li><a href="#!" className="text-white">Like on Facebook</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="navbar navbar-dark bg-dark shadow-sm">
+          <div className="navbar navbar-dark bg-dark shadow-lg" id="navbarMain">
             <div className="container d-flex justify-content-between">
               <Link to={localStorage.getItem('token') ? "/home" : "#"} className="navbar-brand d-flex align-items-center mr-0">
-                <img src={Bug} alt="bug" />
-                <strong className="pl-2">Animals</strong>
+                <img src={Bug} alt="bug" className="nav-icons" />
+                <strong className="pl-2">Animabry</strong>
               </Link>
-              {this.props.location.pathname === '/home' && <div className="d-flex align-items-center nav-btn">
-                <Link to="/add">Add Animal</Link>
-              </div>}
-              <div className="d-flex align-items-center">
-                {this.props.location.pathname === '/home' && 
-                <div className="d-flex align-items-center nav-btn mr-3">
-                  <a role="button" className="btn btn-transparent text-white" onClick={this._logOut}>Sign Out</a>
-                </div>
-                }
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-                  <span className="navbar-toggler-icon"></span>
-                </button>
+              <div className="d-flex align-items-center nav-btn">
+                {this.props.location.pathname === '/home' && <Link to="/add"><img src={Plus} alt="plus" className="nav-icons" /></Link>}
+                  
+                <a href="#!" role="button" onClick={this._toggleFullScreen}>
+                  <img src={this.state.isFullScreen ? Shrink : Expand} alt={`${this.state.isFullScreen ? "normal" : "full"} screen`} className="nav-icons" />
+                </a>
+
+                {(!this.props.location.pathname === '/login' || !this.props.location.pathname === '/register') && <a href="#!"><img src={Person} alt="profile" className="nav-icons" /></a>}
+
+                {darkmode() ? <a href="#!" onClick={() => console.log('implement dark mode')}><img src={Sun} alt="light mode" className="nav-icons" /></a> : <a href="#!"><img src={Moon} alt="dark mode" className="nav-icons" /></a>}
+
+                {isAutheticated() && <a href="#!" role="button" onClick={this._logOut}><img src={SignOut} alt="sign out" className="nav-icons" style={{width: '1.5rem'}} /></a>}
               </div>
             </div>
           </div>

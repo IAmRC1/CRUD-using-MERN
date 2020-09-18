@@ -16,7 +16,16 @@ exports.createOne = (req, res) => {
 };
 
 exports.getAll = (req, res) => {
-  Animal.find({})
+  if (!Object.keys(req.query).length) {
+    return res.status(400).json(helper.errorResponse(400, true, 'Need a query object.', 'Query Absent'));
+  }
+  return Animal.find({
+    name: {
+      $regex: req.query.search,
+      $options: 'i',
+    },
+  })
+    .where('name')
     .sort({ createdAt: -1 })
     .select('-__v')
     .populate({

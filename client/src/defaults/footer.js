@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="text-muted text-center">
       <div className="container">
-        <p className="m-0">Made with &hearts;, used MERN stack, Instagram @IAmRC1</p>
+        <p className="m-0">Made with &hearts; using MERN stack</p>
       </div>
     </footer>
   )

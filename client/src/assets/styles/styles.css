@@ -15,6 +15,19 @@ body {
 .title{
   font-family: 'Bangers', sans-serif;
 }
+#navbarMain{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: top 0.3s ease-in-out;
+  z-index: 99;
+}
+main, .form-signup, .form-create{ 
+  margin-top: 60px !important;
+}
+.nav-icons {
+  width: 1.25rem;
+}
 .nav-btn a{
   text-decoration: none;
   margin-right: 1rem;
@@ -93,7 +106,7 @@ footer p {
   border-top-right-radius: 0;
   margin-bottom: 1rem;
 }
-.form-signup .error, .form-create .error{ 
+.form-signup .error, .form-create .error, .album .error{ 
   margin: 0;
   color: #cd5c5c;
 }
@@ -140,3 +153,11 @@ footer p {
 .album .card .card-img-top{
   height: 12rem;
 }
+
+.form-create .custom-file-label{
+  color: #6c757d;
+}
+.form-create .custom-file-label.image-label{
+  color: #2e3338;
+}
+
