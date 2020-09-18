@@ -11,6 +11,7 @@ class Main extends React.Component {
 
   state = {
     animals: [],
+    pagination: {},
     searchVal: "",
     searchValError: ""
   };
@@ -36,7 +37,7 @@ class Main extends React.Component {
         .then(res => res.data)
         .then(data => {
           if(!data.error){
-            this.setState({ animals: data.data }, () => {
+            this.setState({ animals: data.data, pagination: data.pagination }, () => {
               return alertInfo('success', 'Data fetched successfully')
             })
           }
@@ -91,7 +92,7 @@ class Main extends React.Component {
                 />
               ))}
             </div>
-            <Pagination />
+            <Pagination pagination={this.state.pagination} />
           </div>
         </div>
       </main>

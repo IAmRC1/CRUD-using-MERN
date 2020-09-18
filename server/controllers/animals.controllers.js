@@ -15,24 +15,51 @@ exports.createOne = (req, res) => {
     .catch((err) => res.status(400).json(helper.errorResponse(400, true, err, 'Animal could not be created.')));
 };
 
-exports.getAll = (req, res) => {
+exports.getAll = async (req, res) => {
+  const {
+    currentPage = 1, perPage = 5, search = '',
+  } = req.query;
+  const skip = parseInt((currentPage - 1) * perPage, 10);
+  const limit = parseInt(perPage, 10);
   if (!Object.keys(req.query).length) {
     return res.status(400).json(helper.errorResponse(400, true, 'Need a query object.', 'Query Absent'));
   }
+  if (currentPage < 0 || currentPage === 0) {
+    return res.status(400).json(helper.errorResponse(400, true, 'Page number should start with 1.', 'Invalid Page Number'));
+  }
+  const totalCount = await Animal.countDocuments();
+  const total = Math.ceil(totalCount / limit);
+
   return Animal.find({
     name: {
-      $regex: req.query.search,
+      $regex: search,
       $options: 'i',
     },
   })
     .where('name')
+    .skip(skip)
+    .limit(limit)
     .sort({ createdAt: -1 })
     .select('-__v')
     .populate({
       path: 'submittedBy',
       select: 'name email',
     })
-    .exec((err, animals) => res.status(200).json(helper.successResponse(200, false, 'All animals fetched successfully!', animals)));
+    .exec((err, animals) => res.status(200)
+      .json(
+        {
+          status: 200,
+          error: false,
+          message: 'All animals fetched successfully!',
+          data: animals,
+          pagination: {
+            current_page: +currentPage,
+            per_page: +limit,
+            total: +totalCount,
+            last_page: +total,
+          },
+        },
+      ));
 };
 
 exports.getOne = (req, res) => {
