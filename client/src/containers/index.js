@@ -1,6 +1,6 @@
 import Card from './card'
-import Pagination from './pagination'
+import ScrollToTop from './scrollToTop'
 
 export {
-  Card, Pagination, 
+  Card, ScrollToTop,
 }

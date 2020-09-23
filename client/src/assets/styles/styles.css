@@ -1,3 +1,6 @@
+html{
+  scroll-behavior: smooth;
+}
 body {
   margin: 0;
   padding: 0;
@@ -137,11 +140,13 @@ footer p {
 
 /*Home Page*/
 .album .card{
-  transition: box-shadow 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
   cursor: pointer;
 }
+
 .album .card:hover{ 
   box-shadow: 0 0 1px #ccc, 0 10px 20px #ccc;
+  transform: translateY(-3px);
 }
 
 .album .card .card-body .card-text{
@@ -161,3 +166,10 @@ footer p {
   color: #2e3338;
 }
 
+#scroll-top{
+  right: 0.5em;
+  bottom: 1em;
+  transition: opacity 1s ease-in-out;
+  opacity: 0;
+  z-index: 1000;
+}

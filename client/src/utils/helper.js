@@ -1,17 +1,8 @@
 import React from 'react'
-import axios from 'axios'
 import { Notyf } from 'notyf';
 import TimeAgo from 'react-timeago'
 
 const notyf = new Notyf({ duration: 3000, position: { x:'right', y:'top' }});
-
-const setAuthToken = (token) => {
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = token;
-  } else {
-    delete axios.defaults.headers.common["Authorization"];
-  }
-};
 
 const alertInfo = (type, message) => {
   switch(type){
@@ -48,5 +39,5 @@ const inputFile = ({ field, form, ...props }) => (
 )
 
 export { 
-  setAuthToken, alertInfo, isAutheticated, timeAgo, inputTextArea, inputFile,
+  alertInfo, isAutheticated, timeAgo, inputTextArea, inputFile,
 }

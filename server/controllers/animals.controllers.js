@@ -17,19 +17,21 @@ exports.createOne = (req, res) => {
 
 exports.getAll = async (req, res) => {
   const {
-    currentPage = 1, perPage = 5, search = '',
+    currentPage = 1, perPage = 20, search = '',
   } = req.query;
   const skip = parseInt((currentPage - 1) * perPage, 10);
   const limit = parseInt(perPage, 10);
   if (!Object.keys(req.query).length) {
     return res.status(400).json(helper.errorResponse(400, true, 'Need a query object.', 'Query Absent'));
   }
-  if (currentPage < 0 || currentPage === 0) {
+  if (currentPage < 0 || currentPage == 0) {
     return res.status(400).json(helper.errorResponse(400, true, 'Page number should start with 1.', 'Invalid Page Number'));
   }
   const totalCount = await Animal.countDocuments();
-  const total = Math.ceil(totalCount / limit);
-
+  const lastPageDocuments = Math.ceil(totalCount / limit);
+  if (currentPage > lastPageDocuments) {
+    return res.status(400).json(helper.errorResponse(400, true, 'Current page can\'t be greater than last page', 'Invalid Current Page Number'));
+  }
   return Animal.find({
     name: {
       $regex: search,
@@ -56,7 +58,7 @@ exports.getAll = async (req, res) => {
             current_page: +currentPage,
             per_page: +limit,
             total: +totalCount,
-            last_page: +total,
+            last_page: +lastPageDocuments,
           },
         },
       ));
