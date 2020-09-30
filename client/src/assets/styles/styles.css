@@ -9,6 +9,18 @@ body {
 .cursor-pointer{
   cursor: pointer !important;
 }
+a:hover{ 
+  text-decoration: none;
+}
+.error{ 
+  margin: 0;
+  color: #cd5c5c;
+}
+.d-flex-center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 @media (min-width: 768px) {
   .w-md-50{
@@ -25,7 +37,7 @@ body {
   transition: top 0.3s ease-in-out;
   z-index: 99;
 }
-main, .form-signup, .form-create{ 
+main, .form-signup, .form-create, .profile{ 
   margin-top: 60px !important;
 }
 .nav-icons {
@@ -38,7 +50,7 @@ main, .form-signup, .form-create{
   transition: all 0.3s ease-in-out;
 }
 .nav-btn a:hover, .nav-btn button:hover{
-  color: orange !important;
+  color: #ffa500 !important;
 }
 .nav-btn a:last-child{
   margin-right: 0;
@@ -109,10 +121,7 @@ footer p {
   border-top-right-radius: 0;
   margin-bottom: 1rem;
 }
-.form-signup .error, .form-create .error, .album .error{ 
-  margin: 0;
-  color: #cd5c5c;
-}
+
 .form-signup .toggleView{
   position: absolute;
   right: 1px;
@@ -149,7 +158,7 @@ footer p {
   transform: translateY(-3px);
 }
 
-.album .card .card-body .card-text{
+.album .card .card-body .card-text, .profile .card .card-body .card-text{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -158,7 +167,12 @@ footer p {
 .album .card .card-img-top{
   height: 12rem;
 }
-
+.album .no-data-text{
+  font-size: 3em;
+  text-transform: uppercase;
+  color: #66666640;
+  margin: 0;
+}
 .form-create .custom-file-label{
   color: #6c757d;
 }
@@ -167,9 +181,255 @@ footer p {
 }
 
 #scroll-top{
+  color: #343a40;
   right: 0.5em;
   bottom: 1em;
-  transition: opacity 1s ease-in-out;
+  transition: all 0.4s ease-in-out;
   opacity: 0;
   z-index: 1000;
+}
+
+[data-tooltip] {
+  position: relative;
+  z-index: 10;
+}
+
+/* Positioning and visibility settings of the tooltip */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  left: 50%;
+  bottom: calc(100% + 5px);
+  pointer-events: none;
+  transition: 0.2s;
+  will-change: transform;
+}
+
+/* The actual tooltip with a dynamic width */
+[data-tooltip]:before {
+  content: attr(data-tooltip);
+  padding: 5px 15px;
+  min-width: 50px;
+  max-width: 300px;
+  width: max-content;
+  border-radius: 3px;
+  font-size: 14px;
+  /* background-color: rgba(59, 72, 80, 0.9); */
+  background-color: #343a40;
+  background-image: linear-gradient(30deg,
+    rgba(59, 72, 80, 0.44),
+    rgba(59, 68, 75, 0.44),
+    rgba(60, 82, 88, 0.44));
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  text-align: center;
+  white-space: pre-wrap;
+  transform: translate(-50%, -5px) scale(0.5);
+}
+
+/* Tooltip arrow */
+[data-tooltip]:after {
+  content: '';
+  border-style: solid;
+  border-width: 5px 5px 0px 5px;
+  border-color: rgba(55, 64, 70, 0.9) transparent transparent transparent;
+  transition-duration: 0s; /* If the mouse leaves the element, the transition effects for the tooltip arrow are "turned off" */
+  transform-origin: top;   /* Orientation setting for the slide-down effect */
+  transform: translate(-50% 20px) scaleY(0);
+}
+
+/* Tooltip becomes visible at hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  opacity: 1;
+}
+/* Scales from 0.5 to 1 -> grow effect */
+[data-tooltip]:hover:before {
+  transition-delay: 0.2s;
+  transform: translate(-50%, 10px) scale(1);
+}
+/* Slide down effect only on mouseenter (NOT on mouseleave) */
+[data-tooltip]:hover:after {
+  transition-delay: 0.2s; /* Starting after the grow effect */
+  transition-duration: 0.2s;
+  transform: translate(-50%, 5px) scaleY(1);
+}
+/*
+  That's it.
+*/
+
+
+/* BOTTOM */
+[data-tooltip-location="bottom"]:before,
+[data-tooltip-location="bottom"]:after {
+  top: calc(100% + 5px);
+  bottom: auto;
+}
+
+[data-tooltip-location="bottom"]:before {
+  transform: translate(-50%, 5px) scale(0.5);
+}
+[data-tooltip-location="bottom"]:hover:before {
+  transform: translate(-50%, 12x) scale(1);
+}
+
+[data-tooltip-location="bottom"]:after {
+  border-width: 0px 5px 5px 5px;
+  /* border-color: transparent transparent rgba(55, 64, 70, 0.9) transparent; */
+  border-color: transparent transparent #343a40 transparent;
+  transform-origin: bottom;
+}
+
+
+
+/*
+  If you want some adjustability
+  here are some orientation settings you can use:
+*/
+
+/* LEFT */
+/* Tooltip + arrow */
+[data-tooltip-location="left"]:before,
+[data-tooltip-location="left"]:after {
+  left: auto;
+  right: calc(100% + 5px);
+  bottom: 50%;
+}
+
+/* Tooltip */
+[data-tooltip-location="left"]:before {
+  transform: translate(-5px, 50%) scale(0.5);
+}
+[data-tooltip-location="left"]:hover:before {
+  transform: translate(-5px, 50%) scale(1);
+}
+
+/* Arrow */
+[data-tooltip-location="left"]:after {
+  border-width: 5px 0px 5px 5px;
+  border-color: transparent transparent transparent rgba(55, 64, 70, 0.9);
+  transform-origin: left;
+  transform: translateY(50%) scaleX(0);
+}
+[data-tooltip-location="left"]:hover:after {
+  transform: translateY(50%) scaleX(1);
+}
+
+
+
+/* RIGHT */
+[data-tooltip-location="right"]:before,
+[data-tooltip-location="right"]:after {
+  left: calc(100% + 5px);
+  bottom: 50%;
+}
+
+[data-tooltip-location="right"]:before {
+  transform: translate(5px, 50%) scale(0.5);
+}
+[data-tooltip-location="right"]:hover:before {
+  transform: translate(5px, 50%) scale(1);
+}
+
+[data-tooltip-location="right"]:after {
+  border-width: 5px 5px 5px 0px;
+  border-color: transparent rgba(55, 64, 70, 0.9) transparent transparent;
+  transform-origin: right;
+  transform: translateY(50%) scaleX(0);
+}
+[data-tooltip-location="right"]:hover:after {
+  transform: translateY(50%) scaleX(1);
+}
+
+
+.profile .user-section .user-section-block{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+}
+.edit-profile .user-section .user-section-block{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 550px;
+  margin: auto;
+}
+.profile .user-section .user-image,
+.edit-profile .user-section .user-image{
+  text-align: center;
+  position: relative;
+}
+.profile .user-section .user-image > img,
+.edit-profile .user-section .user-image > img{
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  box-shadow: 0 0 24px #ccc;
+  filter: grayscale(100%);
+}
+.edit-profile .user-section .user-image .upload-icon{
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  bottom: 10px;
+  right: -10px;
+  z-index: 99;
+  background-color: #cd5c5c;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px #cccccc20;
+  cursor: pointer;
+}
+.profile .user-section .user-details-block,
+.edit-profile .user-section-block .user-details{
+  margin-left: 3rem;
+}
+.profile .user-section .user-details-block .edit-profile-block{
+  margin-top: 1rem;
+}
+.profile .user-section .user-details p,
+.edit-profile .user-section-block .user-details p{
+  text-align: start;
+}
+.profile .user-section .user-name,
+.profile .stats-section .stats-num,
+.edit-profile .user-section .user-name{
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  text-transform: capitalize;
+}
+.edit-profile .user-section .user-name{
+  text-transform: lowercase;
+}
+.profile .user-section .user-bio,
+.profile .stats-section .stats-type,
+.edit-profile .user-section .user-email{
+  color: #666;
+  margin: 0;
+  text-align: center;
+}
+
+.profile .posts-section .post-image{
+  overflow: hidden;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.profile .posts-section .post-image img{
+  border-radius: 0.5rem;
+  width: 500px;
+}
+
+.btn-heart{
+  padding: 0.1rem 0.5rem;
 }

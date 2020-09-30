@@ -1,15 +1,16 @@
 import React from 'react'
 import axios from 'axios'
 import { Link, Redirect, } from 'react-router-dom'
-import { alertInfo, isAutheticated, } from '../utils/helper'
+import { alertInfo, isAuthenticated, } from '../utils/helper'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { default as EyeOpen } from '../assets/svg/eye-open.svg';
-import { default as EyeClosed } from '../assets/svg/eye-closed.svg';
+import { EyeOpen, EyeClosed, } from '../assets/svg';
+
+const BASE_URL = "/api/v1/auth"
 
 class SignUp extends React.Component {
 
   state = {
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -18,12 +19,14 @@ class SignUp extends React.Component {
 
   _validate = (values) => {
     const errors = {};
-    if (!values.name) {
-     errors.name = 'Username is required';
-    } else if(/(^\s+|\s+$)/g.test(values.name)){
-      errors.name = 'Spaces not allowed at the start/end';
-    } else if (values.name.length < 6 || values.name.length > 18) {
-      errors.name = 'Username must be 6-18 chars long.';
+    if (!values.username) {
+     errors.username = 'Username is required';
+    } else if(/(^\s+|\s+$)/g.test(values.username)){
+      errors.username = 'Spaces not allowed at the start/end';
+    } else if (values.username.length < 4) {
+      errors.username = 'Username must be 4-16 chars long.';
+    } else if (!/[0-9]/g.test(values.username)) {
+      errors.username = 'Username must be alphanumeric.';
     } else if (!values.email) {
       errors.email = 'Email is required';
     } else if(/(^\s+|\s+$)/g.test(values.email)){
@@ -47,8 +50,8 @@ class SignUp extends React.Component {
   }
 
   _submitForm = (values) => {
-    const user = { name: values.name, email: values.email, password: values.password }
-    axios.post('/api/v1/auth/register', user)
+    const user = { username: values.username, email: values.email, password: values.password }
+    axios.post(`${BASE_URL}/register`, user)
     .then(res => res.data)
     .then(data => {
       if(!data.error){
@@ -79,26 +82,27 @@ class SignUp extends React.Component {
   }
 
   render(){
-    if(isAutheticated()){
+    const { isPasswordVisible, } = this.state;
+    if(isAuthenticated()){
       return <Redirect to="/home" />
     }
     return (
       <Formik
-       initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
+       initialValues={{ username: '', email: '', password: '', confirmPassword: '' }}
        validate={this._validate}
        onSubmit={(values) => this._submitForm(values)}>
        {({ isSubmitting, values }) => (
         <Form noValidate className="form-signup py-5 register-form">
           <h1 className="h3 mb-3 text-center text-uppercase">Register</h1>
-          <ErrorMessage name="name" component="div" className="error" />
+          <ErrorMessage name="username" component="div" className="error" />
           <ErrorMessage name="email" component="div" className="error" />
           <ErrorMessage name="password" component="div" className="error" />
           <ErrorMessage name="confirmPassword" component="div" className="error" />
-          <Field type="text" id="registerName" className="form-control floating-input" placeholder="John12" name="name" />
+          <Field type="text" id="registerName" className="form-control" placeholder="john12" name="username" maxLength="16" />
           <Field type="email" id="registerEmail" className="form-control" placeholder="johndoe@gmail.com" name="email" />
           <div className="position-relative">
             <Field type="password" autoComplete={'off'} id="registerPassword" className="form-control" placeholder="Password" name="password" />
-            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={this.state.isPasswordVisible} onChange={this._togglePasswordView} /><img src={this.state.isPasswordVisible? EyeClosed : EyeOpen} alt={'eye'} /></label>}
+            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={isPasswordVisible} onChange={this._togglePasswordView} /><img src={isPasswordVisible? EyeClosed : EyeOpen} alt={'eye'} /></label>}
           </div>
           <Field type="password" autoComplete={'off'} id="registerConfirmPassword" className="form-control" placeholder="Confirm Password" name="confirmPassword" />
           <button 
@@ -107,7 +111,7 @@ class SignUp extends React.Component {
             disabled={isSubmitting || Object.values(values).includes("")}>
               {`Submit${isSubmitting?'ing':''}`}
           </button>
-          <p className="text-center text-muted mt-3">Already have an account? <Link to="/login">Login here</Link></p>
+          <p className="text-center text-muted mt-2 mb-0">Already have an account? <Link to="/login">Login</Link></p>
         </Form>)}
       </Formik>
     )

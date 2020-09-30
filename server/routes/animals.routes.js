@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const controller = require('../controllers/animals.controllers');
-const helper = require('../utils/helper');
+// const helper = require('../utils/helper');
 const auth = require('../middlewares/auth');
 const { validationType, validate } = require('../middlewares/validations');
 const imageParser = require('../utils/multer-config');

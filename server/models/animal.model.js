@@ -3,10 +3,21 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const animalSchema = new Schema({
-  name: String,
-  description: String,
-  image: String,
   category: String,
+  description: {
+    type: String,
+    default: '',
+  },
+  image: String,
+  likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  likesCount: {
+    type: Number,
+    default: 0,
+  },
+  name: {
+    type: String,
+    default: '',
+  },
   submittedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 

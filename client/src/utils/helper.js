@@ -2,9 +2,8 @@ import React from 'react'
 import { Notyf } from 'notyf';
 import TimeAgo from 'react-timeago'
 
-const notyf = new Notyf({ duration: 3000, position: { x:'right', y:'top' }});
-
 const alertInfo = (type, message) => {
+  const notyf = new Notyf({ duration: 2000, position: { x: 'right', y: 'bottom' }});
   switch(type){
     case 'success':
       return notyf.success(message);
@@ -15,14 +14,14 @@ const alertInfo = (type, message) => {
   }
 }
 
-const isAutheticated = () => window.localStorage.getItem('token') ? true : false;
+const isAuthenticated = () => localStorage.getItem('token') ? true : false;
 
 const timeAgo = (date) => <TimeAgo date={Date.parse(date)} minPeriod="5" />
 
 const inputTextArea = ({ field, form, ...props }) => (
   <React.Fragment>
     <textarea {...field} {...props} ></textarea>
-    <p className="text-right text-muted small m-0">{field.value.length}/{props.maxLength}</p>
+    <p className="text-right text-muted small m-0">{field.value !== undefined ? field.value.length : 0}/{props.maxLength}</p>
   </React.Fragment>
 );
 
@@ -39,5 +38,5 @@ const inputFile = ({ field, form, ...props }) => (
 )
 
 export { 
-  alertInfo, isAutheticated, timeAgo, inputTextArea, inputFile,
+  alertInfo, isAuthenticated, timeAgo, inputTextArea, inputFile,
 }

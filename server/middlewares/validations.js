@@ -4,11 +4,11 @@ const validationType = (type) => {
   switch (type) {
   case 'register':
     return [
-      check('name').trim().not().isEmpty()
-        .withMessage('Name is required')
+      check('username').trim().not().isEmpty()
+        .withMessage('Username is required')
         .bail()
-        .isLength({ min: 6, max: 18 })
-        .withMessage('Name must be between 6 to 18 chars long'),
+        .isLength({ min: 4, max: 16 })
+        .withMessage('Name must be between 4 to 16 chars long'),
       check('email').trim().not().isEmpty()
         .withMessage('Email is required')
         .bail()
@@ -62,6 +62,30 @@ const validationType = (type) => {
       //     },
       //   },
       // }),
+    ];
+  case 'update-user':
+    return [
+      check('bio').trim().not().isEmpty()
+        .withMessage('Bio is required')
+        .bail()
+        .isLength({ min: 50, max: 100 })
+        .withMessage('Bio must be 50-100 chars long'),
+    ];
+  case 'reset-password':
+    return [
+      check('email').trim().not().isEmpty()
+        .withMessage('Email is required')
+        .bail()
+        .isEmail()
+        .withMessage('Please include a valid email'),
+    ];
+  case 'update-password':
+    return [
+      check('password').trim().not().isEmpty()
+        .withMessage('Password is required')
+        .bail()
+        .isLength({ min: 6 })
+        .withMessage('Password must be 6 chars long'),
     ];
   default:
     return [];

@@ -1,4 +1,5 @@
 const Animal = require('../models/animal.model');
+const User = require('../models/auth.model');
 const helper = require('../utils/helper');
 
 exports.createOne = (req, res) => {
@@ -6,12 +7,15 @@ exports.createOne = (req, res) => {
     name, description, category,
   } = req.body;
   const { path } = req.file;
-  const user = req.user.id;
+  const userID = req.user.id;
   const newAnimal = new Animal({
-    name, description, category, submittedBy: user, image: path,
+    name, description, category, submittedBy: userID, image: path,
   });
   newAnimal.save()
-    .then((animal) => res.status(201).json(helper.successResponse(201, false, 'Animal created successfully!', animal)))
+    .then((animal) => {
+      // eslint-disable-next-line no-underscore-dangle
+      User.updateOne({ _id: animal.submittedBy }, { $push: { posts: animal._id } }, () => res.status(201).json(helper.successResponse(201, false, 'Animal created  successfully!', animal)));
+    })
     .catch((err) => res.status(400).json(helper.errorResponse(400, true, err, 'Animal could not be created.')));
 };
 
@@ -29,9 +33,6 @@ exports.getAll = async (req, res) => {
   }
   const totalCount = await Animal.countDocuments();
   const lastPageDocuments = Math.ceil(totalCount / limit);
-  if (currentPage > lastPageDocuments) {
-    return res.status(400).json(helper.errorResponse(400, true, 'Current page can\'t be greater than last page', 'Invalid Current Page Number'));
-  }
   return Animal.find({
     name: {
       $regex: search,
@@ -45,7 +46,7 @@ exports.getAll = async (req, res) => {
     .select('-__v')
     .populate({
       path: 'submittedBy',
-      select: 'name email',
+      select: 'username email',
     })
     .exec((err, animals) => res.status(200)
       .json(

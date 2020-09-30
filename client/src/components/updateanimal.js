@@ -1,82 +1,146 @@
 import React from 'react'
+import { Redirect } from 'react-router-dom'
 import axios from 'axios'
+import { alertInfo, isAuthenticated, inputTextArea, inputFile } from '../utils/helper'
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
-const token = localStorage.getItem('x-auth-token')
+const maxChar = 250;
 
-class Updateanimal extends React.Component {
+class UpdateAnimal extends React.Component {
 
   state = {
-    name: "",
-    type: "",
-    image: "",
-    description: ""
+    label: "Select Image",
   }
 
-  componentDidMount() {
-    axios.get(`/animals/${this.props.match.params.id}`, { headers: { 'x-auth-token' : token }})
-      .then(res => res.data)
-      .then(data => {
-        this.setState({
-          name: data.name,
-          type: data.type,
-          image: data.image,
-          description: data.description,
-        })
+  componentDidMount(){
+    this._getItem();
+  }
+  _getItem = () => {
+    console.log('getitem')
+  }
+
+  _validate = (values) => {
+    const minSize = 100 * 1024; // 100 kb
+    const maxSize = 2 * (1024 ** 2); // 2 mb
+    const mimeType = "image/jpeg, image/jpg, image/png"
+    const errors = {};
+    if (!values.name) {
+      errors.name = 'Name is required';
+    } else if(/(^\s+|\s+$)/g.test(values.name)){
+      errors.name = 'Spaces not allowed at the start/end';
+    } else if (values.name.length < 3) {
+      errors.name = 'Name must be 3-20 chars long.';
+    } else if (!values.category) {
+      errors.category = 'Category is required';
+    } else if(/(^\s+|\s+$)/g.test(values.category)){
+      errors.category = 'Spaces not allowed at the start/end';
+    } else if (values.category.length < 3) {
+      errors.category = 'Category must be 3-20 chars long.';
+    } else if (!values.description) {
+      errors.description = 'Description is required';
+    } else if(/(^\s+|\s+$)/g.test(values.description)){
+      errors.description = 'Spaces not allowed at the start/end';
+    } else if (values.description.length < 30) {
+      errors.description = `Description must be 30-${maxChar} chars long.`;
+    } else if(!values.image){
+      errors.image = 'Image is required'
+    } else if (values.image) {
+      let file = values.image;
+      if (!mimeType.includes(file.type)) {
+        errors.image=`Extension must be jpg, jpeg, png`;
+      } else if (file.size < minSize) {
+        errors.image = 'Uploaded file must be atleast 100KB';
+      } else if (file.size > maxSize) {
+        errors.image = 'Uploaded file cannot exceed 2MB size';
+      }
+    }
+    return errors;
+  }
+
+  _handleFileUpload = (e, {setFieldValue }) => {
+    if(e.target.files){
+      setFieldValue("image", e.target.files[0]) 
+      this.setState({ label: e.target.files[0].name })
+    }
+  }
+  _removeFile = (e, {setFieldValue }) => {
+    setFieldValue("image", "") 
+    this.setState({ label: "Select Image" })
+  }
+
+  _submitForm = (values, { setSubmitting }) => {
+    const animal = new FormData();
+    animal.append('name', values.name)
+    animal.append('category', values.category)
+    animal.append('image', values.image)
+    animal.append('description', values.description)
+    axios.post('/api/v1/animals/:id', animal, { headers: { 'token' : localStorage.getItem('token') }})
+    .then(res => res.data)
+    .then(data => {
+      if(!data.error){
+        alertInfo('success', 'Animal updated successfully')
+        setSubmitting(false);
+        return this.props.history.push('/home')
+      }
+    })
+    .catch(err => {
+      setSubmitting(false);
+      const { errors } = err.response.data
+      errors.map(err => {
+        const keys = Object.keys(err)
+        return alertInfo('error', err[keys])
       })
-      .catch(err => console.log('err', err))
-  }
-
-
-  _onChangeHandler = e => {
-    this.setState({
-      [e.target.name] : e.target.value
     })
   }
 
-  _onSubmit = e => {
-    e.preventDefault();
-    const animal = {
-      name: this.state.name,
-      type: this.state.type,
-      image: this.state.image,
-      description: this.state.description,
-    }
-    axios.post(`/animals/update/${this.props.match.params.id}`, animal)
-    window.location = '/main';
-  }
-
+  
 
   render(){
+    if(!isAuthenticated()){
+      return <Redirect to="/login" />
+    }
     return (
-      <main className="container py-5">
-        <form onSubmit={this._onSubmit}>
-          <div className="form-row">
-            <div className="form-group col-md-4">
-              <label htmlFor="inputName">Name</label>
-              <input type="text" className="form-control" id="inputName" name="name" onChange={this._onChangeHandler} value={this.state.name} />
-            </div>
-            <div className="form-group col-md-4">
-              <label htmlFor="inputType">Type</label>
-              <input className="form-control" id="inputType" name="type" onChange={this._onChangeHandler} value={this.state.type} />
-            </div>
-            {/* <div className="form-group col-md-4">
-              <label htmlFor="inputImage">Image</label>
-              <input type="file" className="form-control" id="inputImage" />
-            </div> */}
-            <div className="form-group col-md-4">
-              <label htmlFor="inputImage">Image</label>
-              <input className="form-control" id="inputImage" name="image" onChange={this._onChangeHandler} value={this.state.image} />
-            </div>
-          </div>
-          <div className="form-group">
-            <label htmlFor="inputDescription">Description</label>
-            <input type="text" className="form-control" id="inputDescription" name="description" onChange={this._onChangeHandler} value={this.state.description} />
-          </div>
-          <button type="submit" className="btn btn-block btn-info">UPDATE</button>
-        </form>
-      </main>
+      <main className="container py-5 form-create">
+        <Formik
+        initialValues={{ name: '', category: '', image: '', description: '' }}
+        validate={this._validate}
+        onSubmit={(values, { setSubmitting }) => this._submitForm(values, { setSubmitting })}>
+          {({ isSubmitting, values, setFieldValue }) => (
+            <Form noValidate>
+              <h1 className="h3 mb-3 text-center text-uppercase">Create New Animal</h1>
+              <div className="form-row">
+                <div className="form-group col-xs-12 col-lg-4">
+                  <Field type="text" id="inputName" className="form-control" placeholder="Tommy" name="name" maxLength="20" />
+                  <ErrorMessage name="name" component="div" className="error" />
+                </div>
+                <div className="form-group col-xs-12 col-lg-4">
+                  <Field type="text" id="inputCategory" className="form-control" placeholder="Bear" name="category" maxLength="20" />
+                  <ErrorMessage name="category" component="div" className="error" />
+                </div>
+                <div className="form-group col-xs-12 col-lg-4">
+                  <Field 
+                    name="image"
+                    handleChange={e => this._handleFileUpload(e, {setFieldValue})}
+                    removeFile={e => this._removeFile(e, {setFieldValue})}
+                    label={this.state.label}
+                    component={inputFile} />
+                  <ErrorMessage name="image" component="div" className="error" />
+                </div>
+              </div>
+              <ErrorMessage name="description" component="div" className="error" />
+              <Field id="inputDescription" className="form-control" placeholder="Description" name="description" rows="4" style={{resize: "none"}} maxLength={maxChar} component={inputTextArea} />
+              <button 
+                type="submit" 
+                className="btn btn-block btn-primary text-uppercase mt-3"
+                disabled={isSubmitting || Object.values(values).includes("")}>
+                  {isSubmitting?'Creating':'Create'}
+              </button>
+            </Form>
+          )}
+          </Formik>
+        </main>
     )
   }  
 }
 
-export default Updateanimal;
+export default UpdateAnimal;

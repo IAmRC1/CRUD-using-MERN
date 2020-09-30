@@ -1,10 +1,11 @@
 import React from 'react'
 import axios from 'axios'
 import { Link, Redirect, } from 'react-router-dom'
-import { alertInfo, isAutheticated, } from '../utils/helper'
+import { alertInfo, isAuthenticated, } from '../utils/helper'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { default as EyeOpen } from '../assets/svg/eye-open.svg';
-import { default as EyeClosed } from '../assets/svg/eye-closed.svg';
+import { EyeOpen, EyeClosed } from '../assets/svg';
+
+const BASE_URL = "/api/v1/auth"
 
 class SignIn extends React.Component {
 
@@ -34,14 +35,15 @@ class SignIn extends React.Component {
 
   _submitForm = (values, { setSubmitting }) => {
     const user = { email: values.email, password: values.password }
-    axios.post('/api/v1/auth/login', user)
+    axios.post(`${BASE_URL}/login`, user)
     .then(res => res.data)
     .then(data => {
       if(!data.error){
-        alertInfo('success', 'Successfully Logged In!')
-        localStorage.setItem('token', data.data)
+        alertInfo('success', 'Successfully Logged In!');
         setSubmitting(false);
-        return this.props.history.push('/home')
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        return this.props.history.push('/home');
       }
     })
     .catch(err => {
@@ -61,7 +63,8 @@ class SignIn extends React.Component {
   }
 
   render(){
-    if(isAutheticated()){
+    const { isPasswordVisible, } = this.state;
+    if(isAuthenticated()){
       return <Redirect to="/home" />
     }
     return (
@@ -77,7 +80,7 @@ class SignIn extends React.Component {
           <Field type="email" id="loginEmail" className="form-control" placeholder="johndoe@gmail.com" name="email" />
           <div className="position-relative">
             <Field type="password" autoComplete={'off'} id="loginPassword" className="form-control" placeholder="Password" name="password" />
-            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={this.state.isPasswordVisible} onChange={this._togglePasswordView} /><img src={this.state.isPasswordVisible? EyeClosed : EyeOpen} alt={'eye'} /></label>}
+            {(values.password || values.confirmPassword) && <label className="toggleView"><input type="checkbox" value={isPasswordVisible} onChange={this._togglePasswordView} /><img src={isPasswordVisible? EyeClosed : EyeOpen} alt={'eye'} /></label>}
           </div>
           <button 
             className="btn btn-lg btn-primary btn-block" 
@@ -85,7 +88,8 @@ class SignIn extends React.Component {
             disabled={isSubmitting || Object.values(values).includes("")}>
               {`Submit${isSubmitting?'ing':''}`}
           </button>
-          <p className="text-center text-muted mt-3">Already have an account? <Link to="/register">Register here</Link></p>
+          <p className="text-center text-muted mt-2 mb-2">Don't have an account? <Link to="/register">Register</Link></p>
+          <p className="text-center text-muted mb-0"><Link to="/resetpassword">Forgot Password?</Link></p>
         </Form>)}
       </Formik>
     )

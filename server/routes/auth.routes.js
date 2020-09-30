@@ -1,21 +1,19 @@
 const router = require('express').Router();
 const controller = require('../controllers/auth.controllers');
 // const helper = require('../utils/helper');
-// const auth = require('../middlewares/auth');
+const auth = require('../middlewares/auth');
 const { validationType, validate } = require('../middlewares/validations');
 
 router.post('/register', validationType('register'), validate, controller.register);
 
 router.post('/login', validationType('login'), validate, controller.login);
 
-// router.post('/forgot-password', controller.forgotPassword);
+router.post('/resetpassword', validationType('reset-password'), validate, controller.sendResetToken);
 
-// router.put('/update-password', controller.changePassword);
+router.post('/resetpassword/:token', validationType('update-password'), validate, controller.verifyTokenAndResetPassword);
 
-// router.delete('/delete-account', controller.deleteAccount);
+router.get('/:id', auth, controller.getUser);
 
-// router.get('/:id', auth, helper.ensureAuthenticated, controller.getUser);
-
-// router.get('/', auth, helper.ensureAuthenticated, controller.getAllUser);
+router.post('/:id', auth, validationType('update-user'), validate, controller.updateUser);
 
 module.exports = router;

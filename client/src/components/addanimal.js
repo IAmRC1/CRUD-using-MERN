@@ -1,14 +1,12 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 import axios from 'axios'
-import { alertInfo, isAutheticated, inputTextArea, inputFile } from '../utils/helper'
+import { alertInfo, isAuthenticated, inputTextArea, inputFile } from '../utils/helper'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-
-const token = localStorage.getItem('token')
 
 const maxChar = 250;
 
-class Addanimal extends React.Component {
+class AddAnimal extends React.Component {
 
   state = {
     label: "Select Image",
@@ -69,11 +67,12 @@ class Addanimal extends React.Component {
     animal.append('category', values.category)
     animal.append('image', values.image)
     animal.append('description', values.description)
-    axios.post('/api/v1/animals', animal, { headers: { 'token' : token }})
+    axios.post('/api/v1/animals', animal,
+    { headers: { 'token' : localStorage.getItem('token') }})
     .then(res => res.data)
     .then(data => {
       if(!data.error){
-        alertInfo('success', 'Animal created successfully')
+        //alertInfo('success', 'Animal created successfully')
         setSubmitting(false);
         return this.props.history.push('/home')
       }
@@ -91,7 +90,7 @@ class Addanimal extends React.Component {
   
 
   render(){
-    if(!isAutheticated()){
+    if(!isAuthenticated()){
       return <Redirect to="/login" />
     }
     return (
@@ -128,7 +127,7 @@ class Addanimal extends React.Component {
                 type="submit" 
                 className="btn btn-block btn-primary text-uppercase mt-3"
                 disabled={isSubmitting || Object.values(values).includes("")}>
-                  {isSubmitting?'Creating':'Create'}
+                  {`Creat${isSubmitting?'ing':'e'}`}
               </button>
             </Form>
           )}
@@ -138,4 +137,4 @@ class Addanimal extends React.Component {
   }  
 }
 
-export default Addanimal;
+export default AddAnimal;

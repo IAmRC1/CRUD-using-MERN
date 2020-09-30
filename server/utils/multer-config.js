@@ -5,8 +5,8 @@ const config = require('config');
 
 cloudinary.config({
   cloud_name: config.get('cloudName'),
-  api_key: config.get('apiKey'),
-  api_secret: config.get('apiSecret'),
+  api_key: config.get('cloudinaryApiKey'),
+  api_secret: config.get('cloudinaryApiSecret'),
 });
 
 const storage = new CloudinaryStorage({
