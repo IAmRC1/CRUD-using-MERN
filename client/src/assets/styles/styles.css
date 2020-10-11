@@ -164,8 +164,9 @@ footer p {
   text-overflow: ellipsis;
 }
 
-.album .card .card-img-top{
+.album .card .card-img-top, .profile .card .card-img-top{
   height: 12rem;
+  object-fit: cover;
 }
 .album .no-data-text{
   font-size: 3em;
@@ -178,6 +179,7 @@ footer p {
 }
 .form-create .custom-file-label.image-label{
   color: #2e3338;
+  overflow: hidden;
 }
 
 #scroll-top{
@@ -375,11 +377,11 @@ footer p {
   filter: grayscale(100%);
 }
 .edit-profile .user-section .user-image .upload-icon{
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   position: absolute;
   bottom: 10px;
-  right: -10px;
+  right: 5px;
   z-index: 99;
   background-color: #cd5c5c;
   border-radius: 50%;
@@ -429,7 +431,71 @@ footer p {
   border-radius: 0.5rem;
   width: 500px;
 }
-
-.btn-heart{
+.btn-heart{ 
   padding: 0.1rem 0.5rem;
+}
+.btn-heart.btn-outline-danger{
+  color: #dc3545;
+}
+.btn-heart.btn-outline-danger:hover, .btn-heart.btn-outline-info:hover{
+  color: #fff;
+}
+.btn-heart.btn-danger{
+  color: #fff;
+}
+.btn-heart.btn-danger:hover{
+  color: #fff;
+}
+
+.view .card{
+  max-width: 600px;
+}
+.view .post-header{
+  display: flex;
+  align-items: center;
+  padding: 1rem; 
+}
+.view .post-header .user-image{
+  margin-left: 1rem;
+}
+.view .post-header .user-image img{
+  height: 3rem;
+}
+.view .post-header .post-details{
+  flex: 1;
+}
+.view .post-header .post-details .post-name{
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.view .post-header .post-details .post-category{
+  margin: 0;
+}
+.view .post-header .post-details .post-time{
+  margin: 0;
+}
+.view .post-image img{
+  height: 20rem;
+  object-fit: contain;
+}
+.view .post-description{
+  padding: 1rem;
+}
+.view .action-buttons{
+  padding: 0 1rem 1rem 1rem;
+}
+
+.logout.modal .close{
+  outline: none;
+}
+.logout.modal .modal-title{
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.logout.modal .modal-footer{
+  justify-content: center;
+}
+.logout.modal .btn{
+  color: #fff;
 }

@@ -122,7 +122,7 @@ class Profile extends React.Component {
               <div className="row">
                 {posts.map(post => (
                   <Card 
-                    type={"profile"}
+                    type="profile"
                     key={post._id}
                     id={post._id}
                     name={post.name}

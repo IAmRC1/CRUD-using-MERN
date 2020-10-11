@@ -9,7 +9,7 @@ export default function InputSearch({ searchVal, searchValError, handleChange })
         <input 
           type="text" 
           className="form-control" 
-          placeholder="Search Animals by Name" 
+          placeholder="Search by Name" 
           name="searchVal"
           maxLength="20"
           value={searchVal}

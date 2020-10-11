@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Redirect, } from "react-router-dom";
-import { SignUp, SignIn, Header, Footer, Main, AddAnimal, UpdateAnimal, Profile, UpdateProfile, ResetPassword, ChangePassword } from './components';
+import { SignUp, SignIn, Header, Footer, Main, AddAnimal, UpdateAnimal, Profile, UpdateProfile, ResetPassword, ChangePassword, ViewAnimal, } from './components';
 import { ScrollToTop, } from './containers'
 import './assets/styles/styles.css';
 import { isAuthenticated, } from './utils/helper'
@@ -29,6 +29,7 @@ function App () {
       <Route path="/profile" component={Profile} />
       <Route path="/add" component={AddAnimal} />
       <Route path="/update/:id" component={UpdateAnimal} />
+      <Route path="/view/:id" component={ViewAnimal} />
       <Route path="/updateprofile" component={UpdateProfile} />
       <Footer />
     </BrowserRouter>

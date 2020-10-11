@@ -90,3 +90,28 @@ exports.deleteOne = (req, res) => {
     .then(() => res.status(200).json(helper.successResponse(200, false, 'Animal deleted successfully!', [])))
     .catch((err) => res.status(400).json(helper.errorResponse(400, true, 'Some error happened in deleting', err)));
 };
+
+exports.toggleLike = (req, res) => {
+  const { id } = req.params;
+  const userID = req.user.id;
+  Animal.findById(id, (err, animal) => {
+    if (err) res.status(400).json(helper.errorResponse(400, true, 'Error in finding animal!', 'Unexpected Error'));
+    if (!animal) res.status(400).json(helper.errorResponse(400, true, 'Couldn\'t find animal!', 'Unexpected Error'));
+    const doc = animal;
+    if (doc.likes.includes(userID)) {
+      const index = doc.likes.indexOf(userID);
+      doc.likes.splice(index, 1);
+      doc.likesCount -= 1;
+      doc.save((erro) => {
+        if (erro) res.status(400).json(helper.errorResponse(400, true, 'Couldn\'t save animal!', 'Unexpected Error'));
+      });
+    } else {
+      doc.likes.push(userID);
+      doc.likesCount += 1;
+      doc.save((erro) => {
+        if (erro) res.status(400).json(helper.errorResponse(400, true, 'Couldn\'t save animal!', 'Unexpected Error'));
+      });
+    }
+    res.status(200).json(helper.successResponse(200, false, 'Animal likes toggled successfully!', doc));
+  });
+};

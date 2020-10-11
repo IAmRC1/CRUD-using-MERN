@@ -10,7 +10,9 @@ router.post('/login', validationType('login'), validate, controller.login);
 
 router.post('/resetpassword', validationType('reset-password'), validate, controller.sendResetToken);
 
-router.post('/resetpassword/:token', validationType('update-password'), validate, controller.verifyTokenAndResetPassword);
+router.post('/resetpassword/:token',
+  validationType('update-password'), validate,
+  controller.verifyTokenAndResetPassword);
 
 router.get('/:id', auth, controller.getUser);
 

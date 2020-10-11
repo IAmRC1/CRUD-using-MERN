@@ -79,13 +79,16 @@ class Main extends React.Component {
           }
         })
         .catch(err => {
+          if(err.response.status === 500){
+            return alertInfo('error', 'Server not responding!')  
+          }
           alertInfo('error', err.response.data.message)
         });
     }
   }
 
   _deleteAnimal = (id) => {
-    axios.delete(`/api/v1/animals/${id}`, { headers: { 'token' : localStorage.getItem('token') }})
+    axios.delete(`${BASE_URL}/${id}`, { headers: { 'token' : localStorage.getItem('token') }})
     .then(res => {
       if(!res.data.error){
         this.setState({ animals: this.state.animals.filter(animal => animal._id !== id) }, () => {
@@ -93,11 +96,30 @@ class Main extends React.Component {
         })
       }
     })
-    .catch(err => alertInfo('error', 'Could not delete animal'))
+    .catch(err => {
+      console.log('err.response', err.response);
+      alertInfo('error', 'Could not delete animal')
+    })
   }
 
   _toggleLike = (id) => {
-    console.log('object', id)
+    axios.get(`${BASE_URL}/${id}/togglelike`, { headers: { 'token' : localStorage.getItem('token') }})
+    .then(res => res.data)
+    .then(data => {
+      if(!data.error){
+        const animal_id = document.getElementById(data.data._id);
+        if(!data.data.likes.includes(JSON.parse(localStorage.getItem('user')).id)){
+          animal_id.classList.remove('btn-danger');
+          animal_id.classList.add('btn-outline-danger');
+        } else {
+          animal_id.classList.add('btn-danger');
+          animal_id.classList.remove('btn-outline-danger');
+        }
+        animal_id.lastElementChild.innerHTML = data.data.likesCount;
+        return alertInfo('success', 'Toggled post');
+      }
+    })
+    .catch(err => alertInfo('error', 'Could not toggle Like'))
   }
 
   render() {
@@ -136,6 +158,7 @@ class Main extends React.Component {
                   handleDelete={(id) => this._deleteAnimal(id)}
                   showEditAndDeleteBtn={false}
                   likesCount={animal.likesCount}
+                  likes={animal.likes}
                   toggleLike={(id) => this._toggleLike(id)}
                 />
               ))}

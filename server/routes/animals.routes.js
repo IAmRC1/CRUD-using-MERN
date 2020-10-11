@@ -15,4 +15,6 @@ router.put('/:id', auth, controller.updateOne);
 
 router.delete('/:id', auth, controller.deleteOne);
 
+router.get('/:id/togglelike', auth, controller.toggleLike);
+
 module.exports = router;

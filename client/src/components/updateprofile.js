@@ -76,7 +76,6 @@ class UpdateProfile extends React.Component {
     .then(res => res.data)
     .then(data => {
       if(!data.error){
-        alertInfo('success', 'User updated successfully')
         setSubmitting(false);
         return this.props.history.push('/profile')
       }
