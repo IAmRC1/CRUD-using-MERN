@@ -66,7 +66,7 @@ exports.login = (req, res) => {
 exports.getUser = (req, res) => {
   const { id } = req.params;
   User.findById(id)
-    .select('username email firstname lastname bio')
+    .select('username email firstname lastname bio image createdAt')
     .populate({
       path: 'posts',
       select: '-__v',
@@ -84,11 +84,15 @@ exports.getUser = (req, res) => {
 };
 
 exports.updateUser = (req, res) => {
-  const { firstname, lastname, bio } = req.body;
   const userID = req.user.id;
+  let updatedUser = req.body;
+  if (req.file) {
+    const { path } = req.file;
+    updatedUser = { ...updatedUser, image: path };
+  }
   User.findByIdAndUpdate(
     { _id: userID },
-    { firstname, lastname, bio },
+    updatedUser,
     { new: true },
     (err, user) => {
       if (!user) res.status(400).json(helper.errorResponse(400, true, 'User doesn\'t exists!', 'Non-Existing Error'));

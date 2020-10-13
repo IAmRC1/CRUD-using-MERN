@@ -51,25 +51,6 @@ const validationType = (type) => {
         .bail()
         .isLength({ min: 3, max: 20 })
         .withMessage('Category must be 3-20 chars long'),
-      // checkSchema({
-      //   image: {
-      //     // Custom validators
-      //     custom: {
-      //       options: (value, { req, location, path }) => {
-      //         console.log('value', value);
-      //         return value + req.body.foo + location + path;
-      //       },
-      //     },
-      //   },
-      // }),
-    ];
-  case 'update-user':
-    return [
-      check('bio').trim().not().isEmpty()
-        .withMessage('Bio is required')
-        .bail()
-        .isLength({ min: 50, max: 100 })
-        .withMessage('Bio must be 50-100 chars long'),
     ];
   case 'reset-password':
     return [

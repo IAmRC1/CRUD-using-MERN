@@ -68,9 +68,16 @@ exports.getAll = async (req, res) => {
 exports.getOne = (req, res) => {
   const { id } = req.params;
   Animal.findById(id)
+    .populate({
+      path: 'submittedBy',
+      select: 'username email image',
+    })
+    .populate({
+      path: 'likes',
+      select: 'username',
+    })
     .select('-__v')
-    .then((animal) => res.status(200).json(helper.successResponse(200, false, 'Animal fetched successfully!', animal)))
-    .catch((err) => res.status(400).json(helper.errorResponse(400, true, 'Some error happened', err)));
+    .exec((err, animal) => res.status(200).json(helper.successResponse(200, false, 'Animal fetched successfully!', animal)));
 };
 
 exports.updateOne = (req, res) => {

@@ -11,7 +11,11 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: { folder: 'vandebron-animals' },
+  params: {
+    folder: 'vandebron-animals',
+    allowedFormats: ['jpg', 'png'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
+  },
 });
 
 const imageParser = multer({

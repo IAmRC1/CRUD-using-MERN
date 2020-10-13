@@ -1,5 +1,6 @@
 import { default as Avatar } from './avatar.svg'
 import { default as Bug } from './bug.svg'
+import { default as Cross } from './cross.svg'
 import { default as Delete } from './delete.svg'
 import { default as Edit } from './edit.svg'
 import { default as EyeClosed } from './eye-closed.svg'
@@ -16,5 +17,5 @@ import { default as Upload } from './upload.svg'
 
 
 export {
-  Avatar, Bug, Delete, Edit, EyeClosed, EyeOpen, Heart, Moon, NoData, Person, Plus, Share, SignOut, Sun, Upload, 
+  Avatar, Bug, Cross, Delete, Edit, EyeClosed, EyeOpen, Heart, Moon, NoData, Person, Plus, Share, SignOut, Sun, Upload, 
 }

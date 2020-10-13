@@ -166,7 +166,7 @@ footer p {
 
 .album .card .card-img-top, .profile .card .card-img-top{
   height: 12rem;
-  object-fit: cover;
+  object-fit: contain;
 }
 .album .no-data-text{
   font-size: 3em;
@@ -375,6 +375,13 @@ footer p {
   border-radius: 50%;
   box-shadow: 0 0 24px #ccc;
   filter: grayscale(100%);
+  object-fit: cover;
+}
+.edit-profile .user-section .user-image #local-image{
+  filter: none;
+}
+.edit-profile .user-section #upload-user-icon{
+  display: none;
 }
 .edit-profile .user-section .user-image .upload-icon{
   width: 40px;
@@ -382,13 +389,21 @@ footer p {
   position: absolute;
   bottom: 10px;
   right: 5px;
-  z-index: 99;
-  background-color: #cd5c5c;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 24px #cccccc20;
+  cursor: pointer;
+}
+.edit-profile .user-section .user-image #upload-icon{
+  background-color: #0069d9;
+}
+.edit-profile .user-section .user-image #remove-icon{
+  background-color: #cd5c5c;
+}
+.edit-profile .user-section .user-image .upload-icon img{
+  z-index: 99;
   cursor: pointer;
 }
 .profile .user-section .user-details-block,
@@ -422,15 +437,6 @@ footer p {
   text-align: center;
 }
 
-.profile .posts-section .post-image{
-  overflow: hidden;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-.profile .posts-section .post-image img{
-  border-radius: 0.5rem;
-  width: 500px;
-}
 .btn-heart{ 
   padding: 0.1rem 0.5rem;
 }
@@ -459,7 +465,11 @@ footer p {
   margin-left: 1rem;
 }
 .view .post-header .user-image img{
-  height: 3rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 0 24px #ccc;
+  object-fit: cover;
 }
 .view .post-header .post-details{
   flex: 1;

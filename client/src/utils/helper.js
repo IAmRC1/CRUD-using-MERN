@@ -37,6 +37,22 @@ const inputFile = ({ field, form, ...props }) => (
   </div>
 )
 
+const formatDate = (date) => {
+  return date;
+}
+
+const protectEmail = (email) => {
+  let avg, splitted_email, beforeAt, afterAt, part1, part2, coded;
+  splitted_email = email.split("@");
+  beforeAt = splitted_email[0];
+  afterAt = splitted_email[1];
+  avg = beforeAt.length / 2;
+  part1 = beforeAt.substring(0, (beforeAt.length - avg));
+  part2 = beforeAt.substring(avg, beforeAt.length);
+  coded = 'x'.repeat(part2.length)
+  return `${part1}${coded}@${afterAt}`;
+};
+
 export { 
-  alertInfo, isAuthenticated, timeAgo, inputTextArea, inputFile,
+  alertInfo, isAuthenticated, timeAgo, inputTextArea, inputFile, formatDate, protectEmail,
 }

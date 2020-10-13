@@ -13,7 +13,7 @@ class AddAnimal extends React.Component {
   }
 
   _validate = (values) => {
-    const minSize = 100 * 1024; // 100 kb
+    const minSize = 50 * 1024; // 100 kb
     const maxSize = 2 * (1024 ** 2); // 2 mb
     const mimeType = "image/jpeg, image/jpg, image/png"
     const errors = {};
@@ -42,7 +42,7 @@ class AddAnimal extends React.Component {
       if (!mimeType.includes(file.type)) {
         errors.image=`Extension must be jpg, jpeg, png`;
       } else if (file.size < minSize) {
-        errors.image = 'Uploaded file must be atleast 100KB';
+        errors.image = 'Uploaded file must be atleast 50KB';
       } else if (file.size > maxSize) {
         errors.image = 'Uploaded file cannot exceed 2MB size';
       }

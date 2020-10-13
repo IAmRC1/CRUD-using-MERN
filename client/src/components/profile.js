@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Link, Redirect, } from 'react-router-dom'
 //import { Upload } from '../assets/svg'
 import { Card, } from '../containers'
-import { alertInfo, isAuthenticated, } from '../utils/helper'
+import { alertInfo, isAuthenticated, protectEmail, } from '../utils/helper'
 import { Avatar, } from '../assets/svg'
 import { capitalize } from 'lodash'
 
@@ -45,6 +45,7 @@ class Profile extends React.Component {
                 firstname: capitalize(data.data.firstname),
                 lastname: capitalize(data.data.lastname),
                 bio: data.data.bio,
+                image: data.data.image
               },
               posts: data.data.posts 
             }, () => {
@@ -77,20 +78,26 @@ class Profile extends React.Component {
           <div className="user-section py-3">
             <div className="user-section-block">
               <div className="user-image">
-                <img crossOrigin="anonymous" src={Avatar} alt="user" className="img" />
-                {/* <div className="upload-icon">
-                  <img src={Upload} alt="upload" className="img img-fluid" />
-                </div> */}
+                <img crossOrigin="anonymous" src={user && user.image && user.image !== "" ? user.image : Avatar} alt="user" className="img" />
               </div>
               <div className="user-details-block">
                 <div className="user-details">
-                  {(user && user.firstname) && <p className="user-name">{`${(user && user.firstname)} ${(user && user.lastname)}` || "User Name"}</p>}
-                  <p className={`${(user && user.firstname) === "" && (user && user.firstname) === ""?"user-name text-lowercase": "user-bio"}`}>{`@${(user && user.username)}` || "@username" }</p>
-                  <p className="user-bio">{(user && user.bio) || "Please update your bio" }</p>
+                  {user.firstname && 
+                    <p className="user-name">
+                      {`${(user.firstname)} ${(user.lastname)}` || "User Name"}
+                    </p>
+                  }
+                  <p className={`${user.firstname === "" ? "user-name text-lowercase" : "user-bio"}`}>
+                    {`@${user.username}`}
+                  </p>
+                  <p className="user-bio">{user.email && protectEmail(user.email)}</p>
+                  <p className="user-bio">{user.bio || "Please update your bio" }</p>
                 </div>
-                {state === undefined && <div className="edit-profile-block">
-                  <Link to="/updateprofile" className="btn btn-primary btn-sm">Edit Profile</Link>
-                </div>}
+                {state === undefined && 
+                  <div className="edit-profile-block">
+                    <Link to="/updateprofile" className="btn btn-primary btn-sm">Edit Profile</Link>
+                  </div>
+                }
               </div>
             </div>
           </div>
@@ -104,13 +111,13 @@ class Profile extends React.Component {
               </div>
               <div className="col-4">
                 <div className="stats">
-                  <h6 className="stats-num">2022</h6>
+                  <h6 className="stats-num">123</h6>
                   <p className="stats-type">followers</p>
                 </div>
               </div>
               <div className="col-4">
                 <div className="stats">
-                  <h6 className="stats-num">1098</h6>
+                  <h6 className="stats-num">321</h6>
                   <p className="stats-type">following</p>
                 </div>
               </div>

@@ -77,7 +77,12 @@ class Header extends React.Component {
                 Do you really want to logout?
               </div>
               <div className="modal-footer">
-                <a role="button" className="btn btn-danger btn-block w-50" onClick={this._logOut}>Yes, log me out!</a>
+                <a 
+                  role="button" 
+                  className="btn btn-danger btn-block w-50" 
+                  onClick={this._logOut} 
+                  data-dismiss="modal"
+                >Yes, log me out!</a>
               </div>
             </div>
           </div>
