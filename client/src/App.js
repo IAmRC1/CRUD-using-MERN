@@ -1,11 +1,13 @@
 import React from 'react';
-import { BrowserRouter, Route, Redirect, } from "react-router-dom";
-import { SignUp, SignIn, Header, Footer, Main, AddAnimal, UpdateAnimal, Profile, UpdateProfile, ResetPassword, ChangePassword, ViewAnimal, } from './components';
-import { ScrollToTop, } from './containers'
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import {
+  SignUp, SignIn, Header, Footer, Main, AddAnimal, UpdateAnimal, Profile, UpdateProfile, ResetPassword, ChangePassword, ViewAnimal,
+} from './components';
+import { ScrollToTop } from './containers';
 import './assets/styles/styles.css';
-import { isAuthenticated, } from './utils/helper'
+import { isAuthenticated } from './utils/helper';
 
-function App () {
+function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -13,13 +15,11 @@ function App () {
       <Route
         exact
         path="/"
-        render={() => {
-            return (
-              isAuthenticated() ?
-              <Redirect to="/home" /> :
-              <Redirect to="/register" /> 
-            )
-        }}
+        render={() => (
+          isAuthenticated()
+            ? <Redirect to="/home" />
+            : <Redirect to="/register" />
+        )}
       />
       <Route path="/register" component={SignUp} />
       <Route path="/login" component={SignIn} />

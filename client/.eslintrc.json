@@ -27,7 +27,13 @@
     "implicit-arrow-linebreak": 2,
     "comma-dangle": 2,
     "no-trailing-spaces": 2,
-    "no-console": 0,
-    "no-unused-vars": 2
+    "no-console": 2,
+    "no-unused-vars": 2,
+    "react/state-in-constructor": 0,
+    "react/prop-types": 0,
+    "no-underscore-dangle": 0,
+    "camelcase": 0,
+    "quotes": ["error", "single"],
+    "prefer-destructuring": ["error", {"object": true, "array": false}]
   }
 }
