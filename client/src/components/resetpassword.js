@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
-import { alertInfo, isAuthenticated } from '../utils/helper';
+import { alertInfo } from '../utils/helper';
 
 const BASE_URL = '/api/v1/auth';
 
@@ -25,12 +25,10 @@ class ResetPassword extends React.Component {
     const user = { email: values.email };
     axios.post(`${BASE_URL}/resetpassword`, user)
       .then((res) => res.data)
-      .then((data) => {
-        if (!data.error) {
-          setSubmitting(false);
-          resetForm();
-          return alertInfo('success', 'Reset link sent successfully!');
-        }
+      .then(() => {
+        setSubmitting(false);
+        resetForm();
+        return alertInfo('success', 'Reset link sent successfully!');
       })
       .catch((err) => {
         setSubmitting(false);
@@ -39,9 +37,6 @@ class ResetPassword extends React.Component {
   }
 
   render() {
-    if (isAuthenticated()) {
-      return <Redirect to="/home" />;
-    }
     return (
       <Formik
         initialValues={{ email: '' }}
@@ -50,7 +45,7 @@ class ResetPassword extends React.Component {
           this._submitForm(values, { setSubmitting, resetForm })
         )}
       >
-        {({ isSubmitting, values }) => (
+        {({ isSubmitting, dirty }) => (
           <Form noValidate className="form-signup py-5 login-form">
             <h1 className="h3 mb-3 text-center text-uppercase">Reset Password</h1>
             <ErrorMessage name="email" component="div" className="error" />
@@ -58,7 +53,7 @@ class ResetPassword extends React.Component {
             <button
               className="btn btn-lg btn-primary btn-block"
               type="submit"
-              disabled={isSubmitting || Object.values(values).includes('')}
+              disabled={isSubmitting || !dirty}
             >
               Send Reset Link
             </button>

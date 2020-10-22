@@ -15,6 +15,10 @@ const userSchema = new Schema({
     lowercase: true,
   },
   image: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   lastname: {
     type: String,
     lowercase: true,

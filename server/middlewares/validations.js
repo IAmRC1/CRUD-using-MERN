@@ -1,4 +1,4 @@
-const { check, validationResult, checkSchema } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 const validationType = (type) => {
   switch (type) {
@@ -19,6 +19,22 @@ const validationType = (type) => {
         .bail()
         .isLength({ min: 6 })
         .withMessage('Password must be 6 chars long'),
+    ];
+  case 'otp':
+    return [
+      check('otp').trim().not().isEmpty()
+        .withMessage('OTP is required')
+        .bail()
+        .isLength({ min: 6, max: 6 })
+        .withMessage('OTP must be 6 chars in length'),
+    ];
+  case 'email':
+    return [
+      check('email').trim().not().isEmpty()
+        .withMessage('Email is required')
+        .bail()
+        .isEmail()
+        .withMessage('Please include a valid email'),
     ];
   case 'login':
     return [

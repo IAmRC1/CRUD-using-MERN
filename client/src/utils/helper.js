@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Notyf } from 'notyf';
 import TimeAgo from 'react-timeago';
@@ -13,8 +14,6 @@ const alertInfo = (type, message) => {
     return null;
   }
 };
-
-const isAuthenticated = () => (!!localStorage.getItem('token'));
 
 const timeAgo = (date) => <TimeAgo date={Date.parse(date)} minPeriod="5" />;
 
@@ -41,8 +40,6 @@ const inputFile = ({ field, form, ...props }) => (
   </div>
 );
 
-const formatDate = (date) => date;
-
 const protectEmail = (email) => {
   const splitted_email = email.split('@');
   const beforeAt = splitted_email[0];
@@ -55,5 +52,5 @@ const protectEmail = (email) => {
 };
 
 export {
-  alertInfo, isAuthenticated, timeAgo, inputTextArea, inputFile, formatDate, protectEmail,
+  alertInfo, timeAgo, inputTextArea, inputFile, protectEmail,
 };

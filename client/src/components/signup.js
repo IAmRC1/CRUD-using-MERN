@@ -4,7 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
-import { alertInfo, isAuthenticated } from '../utils/helper';
+import { alertInfo } from '../utils/helper';
 import { EyeOpen, EyeClosed } from '../assets/svg';
 
 const BASE_URL = '/api/v1/auth';
@@ -50,17 +50,24 @@ class SignUp extends React.Component {
     const user = { username: values.username, email: values.email, password: values.password };
     axios.post(`${BASE_URL}/register`, user)
       .then((res) => res.data)
-      .then((data) => {
-        if (!data.error) {
-          alertInfo('success', 'Successfull Registration!');
-          return this.props.history.push('/login');
-        }
+      .then(() => {
+        alertInfo('success', 'Successfull Registration!');
+        return (
+          <Redirect to={{
+            pathname: '/verify',
+            state: { email: values.email },
+          }}
+          />
+        );
       })
       .catch((err) => {
+        if (err.response.status === 400) {
+          return alertInfo('error', err.response.data.message);
+        }
         const { errors } = err.response.data;
-        errors.map((err) => {
-          const keys = Object.keys(err);
-          return alertInfo('error', err[keys]);
+        return errors.map((erro) => {
+          const keys = Object.keys(erro);
+          return alertInfo('error', erro[keys]);
         });
       });
   }
@@ -80,9 +87,6 @@ class SignUp extends React.Component {
 
   render() {
     const { isPasswordVisible } = this.state;
-    if (isAuthenticated()) {
-      return <Redirect to="/home" />;
-    }
     return (
       <Formik
         initialValues={{
@@ -91,7 +95,9 @@ class SignUp extends React.Component {
         validate={this._validate}
         onSubmit={(values) => this._submitForm(values)}
       >
-        {({ isSubmitting, values }) => (
+        {({
+          isSubmitting, values, dirty, isValid,
+        }) => (
           <Form noValidate className="form-signup py-5 register-form">
             <h1 className="h3 mb-3 text-center text-uppercase">Register</h1>
             <ErrorMessage name="username" component="div" className="error" />
@@ -113,7 +119,7 @@ class SignUp extends React.Component {
             <button
               className="btn btn-lg btn-primary btn-block"
               type="submit"
-              disabled={isSubmitting || Object.values(values).includes('')}
+              disabled={isSubmitting || !dirty || !isValid}
             >
               {`Submit${isSubmitting ? 'ing' : ''}`}
             </button>

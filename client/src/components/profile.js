@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { capitalize } from 'lodash';
-import { Card } from '../containers';
-import { alertInfo, isAuthenticated, protectEmail } from '../utils/helper';
+import { Card, Loader } from '../containers';
+import { alertInfo, protectEmail } from '../utils/helper';
 import { Avatar } from '../assets/svg';
 
 const BASE_URL = '/api/v1/auth';
@@ -12,6 +12,7 @@ class Profile extends React.Component {
   state = {
     user: {},
     posts: [],
+    loading: false,
   }
 
   componentDidMount() {
@@ -21,51 +22,51 @@ class Profile extends React.Component {
   _getProfile = (current_page) => {
     const { animals } = this.state;
     const { location } = this.props;
-    let id;
+    let user_id;
     if (location.state === undefined) {
-      id = JSON.parse(localStorage.getItem('user')).id;
+      user_id = JSON.parse(localStorage.getItem('user')).id;
     } else {
-      id = location.state && location.state.user_id;
+      user_id = location.state && location.state.user_id;
     }
-
+    this.setState({ loading: true });
     axios.get(!current_page
-      ? `${BASE_URL}/${id}`
+      ? `${BASE_URL}/${user_id}`
       : `${BASE_URL}&currentPage=${current_page}`,
     { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
       .then((data) => {
-        if (!data.error) {
-          if (!current_page) {
-            this.setState({
-              user: {
-                id: data.data._id,
-                username: data.data.username,
-                email: data.data.email,
-                firstname: capitalize(data.data.firstname),
-                lastname: capitalize(data.data.lastname),
-                bio: data.data.bio,
-                image: data.data.image,
-              },
-              posts: data.data.posts,
-            }, () => alertInfo('success', 'User fetched successfully'));
-          } else {
-            this.setState({
-              animals: [...animals, ...data.data],
-              pagination: data.pagination,
-            }, () => alertInfo('success', 'User fetched successfully'));
-          }
+        this.setState({ loading: false });
+        if (!current_page) {
+          this.setState({
+            user: {
+              id: data.data._id,
+              username: data.data.username,
+              email: data.data.email,
+              firstname: capitalize(data.data.firstname),
+              lastname: capitalize(data.data.lastname),
+              bio: data.data.bio,
+              image: data.data.image,
+            },
+            posts: data.data.posts,
+          }, () => alertInfo('success', 'User fetched successfully'));
+        } else {
+          this.setState({
+            animals: [...animals, ...data.data],
+            pagination: data.pagination,
+          }, () => alertInfo('success', 'User fetched successfully'));
         }
       })
       .catch((err) => {
+        this.setState({ loading: false });
         alertInfo('error', err.response.data.message);
       });
   }
 
   render() {
-    const { user, posts } = this.state;
+    const { user, posts, loading } = this.state;
     const { location } = this.props;
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
+    if (loading) {
+      return <Loader fullpage />;
     }
     return (
       <div className="profile py-5 bg-light">
@@ -73,7 +74,12 @@ class Profile extends React.Component {
           <div className="user-section py-3">
             <div className="user-section-block">
               <div className="user-image">
-                <img crossOrigin="anonymous" src={user && user.image && user.image !== '' ? user.image : Avatar} alt="user" className="img" />
+                <img
+                  crossOrigin="anonymous"
+                  src={user && user.image && user.image !== '' && user.image !== 'undefined' ? user.image : Avatar}
+                  alt="user"
+                  className="img"
+                />
               </div>
               <div className="user-details-block">
                 <div className="user-details">

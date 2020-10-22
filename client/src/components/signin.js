@@ -4,7 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
-import { alertInfo, isAuthenticated } from '../utils/helper';
+import { alertInfo } from '../utils/helper';
 import { EyeOpen, EyeClosed } from '../assets/svg';
 
 const BASE_URL = '/api/v1/auth';
@@ -38,17 +38,24 @@ class SignIn extends React.Component {
     axios.post(`${BASE_URL}/login`, user)
       .then((res) => res.data)
       .then((data) => {
-        if (!data.error) {
-          alertInfo('success', 'Successfully Logged In!');
-          setSubmitting(false);
-          localStorage.setItem('token', data.data.token);
-          localStorage.setItem('user', JSON.stringify(data.data.user));
-          return history.push('/home');
-        }
+        alertInfo('success', 'Successfully Logged In!');
+        setSubmitting(false);
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        return history.push('/home');
       })
       .catch((err) => {
         setSubmitting(false);
-        return alertInfo('error', err.response.data.data);
+        if (err.response.status === 401) {
+          return (
+            <Redirect to={{
+              pathname: '/verify',
+              state: { email: values.email },
+            }}
+            />
+          );
+        }
+        return alertInfo('error', err.response.data.message);
       });
   }
 
@@ -64,16 +71,15 @@ class SignIn extends React.Component {
 
   render() {
     const { isPasswordVisible } = this.state;
-    if (isAuthenticated()) {
-      return <Redirect to="/home" />;
-    }
     return (
       <Formik
         initialValues={{ email: '', password: '' }}
         validate={this._validate}
         onSubmit={(values, { setSubmitting }) => this._submitForm(values, { setSubmitting })}
       >
-        {({ isSubmitting, values }) => (
+        {({
+          isSubmitting, values, dirty, isValid,
+        }) => (
           <Form noValidate className="form-signup py-5 login-form">
             <h1 className="h3 mb-3 text-center text-uppercase">Login</h1>
             <ErrorMessage name="email" component="div" className="error" />
@@ -91,7 +97,7 @@ class SignIn extends React.Component {
             <button
               className="btn btn-lg btn-primary btn-block"
               type="submit"
-              disabled={isSubmitting || Object.values(values).includes('')}
+              disabled={isSubmitting || !dirty || !isValid}
             >
               {`Submit${isSubmitting ? 'ing' : ''}`}
             </button>

@@ -1,11 +1,10 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
 import {
-  alertInfo, isAuthenticated, inputTextArea, inputFile,
+  alertInfo, inputTextArea, inputFile,
 } from '../utils/helper';
 
 const maxChar = 250;
@@ -90,9 +89,6 @@ class AddAnimal extends React.Component {
   }
 
   render() {
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
-    }
     const { label } = this.state;
     return (
       <main className="container py-5 form-create">
@@ -103,7 +99,7 @@ class AddAnimal extends React.Component {
           validate={this._validate}
           onSubmit={(values, { setSubmitting }) => this._submitForm(values, { setSubmitting })}
         >
-          {({ isSubmitting, values, setFieldValue }) => (
+          {({ isSubmitting, dirty, setFieldValue }) => (
             <Form noValidate>
               <h1 className="h3 mb-3 text-center text-uppercase">Create New Animal</h1>
               <div className="form-row">
@@ -131,7 +127,7 @@ class AddAnimal extends React.Component {
               <button
                 type="submit"
                 className="btn btn-block btn-primary text-uppercase mt-3"
-                disabled={isSubmitting || Object.values(values).includes('')}
+                disabled={isSubmitting || !dirty}
               >
                 {`Creat${isSubmitting ? 'ing' : 'e'}`}
               </button>

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { alertInfo, isAuthenticated, timeAgo } from '../utils/helper';
+import { alertInfo, timeAgo } from '../utils/helper';
 import { Avatar } from '../assets/svg';
 
 const BASE_URL = '/api/v1/animals';
@@ -51,9 +51,6 @@ class ViewAnimal extends React.Component {
 
   render() {
     const { post } = this.state;
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
-    }
     return (
       <main className="container py-5 view d-flex-center">
         <div className="card shadow-lg">

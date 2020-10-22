@@ -20,19 +20,99 @@ exports.register = (req, res) => {
     if (user) res.status(400).json(helper.errorResponse(400, true, 'Email already exists!', 'Existing Error'));
     const newUser = new User({ username, email, password });
     newUser.save()
-      .then((doc) => res.status(201).json(helper.successResponse(201, false, 'User registered successfully!', {
-        username: doc.username,
-        email: doc.email,
-      })))
-      .catch((err) => res.status(400).json(helper.errorResponse(400, true, 'User could not be created!', err)));
+      .then((doc) => {
+        // Create a verification token
+        const token = new Token({
+          // eslint-disable-next-line no-underscore-dangle
+          user_id: doc._id,
+          token: crypto.randomBytes(3).toString('hex').toUpperCase(),
+        });
+        token.save()
+          .then(() => {
+            const mailOptions = {
+              from: 'Animabry Support <no-reply@animabry.com>',
+              to: email,
+              subject: `${token.token} is Animabry email verification passcode`,
+              html: `<p>Please enter this 6 digit code - ${token.token} to verify your email address! The token will expire after 10 minutes, hurry up!</p>`,
+            };
+            return helper.transporter.sendMail(mailOptions, (errorr) => {
+              if (errorr) res.status(400).json(helper.errorResponse(400, true, 'Sorry, mail wasn\'t sent!', errorr));
+              return res.status(201).json(helper.successResponse(201, false, 'User registered successfully, Please verify email', 'Email Verification Pending'));
+            });
+          });
+      })
+      .catch((err) => res.status(400).json(helper.errorResponse(400, true, 'User could not be saved!', err)));
+  });
+};
+
+exports.verifyEmail = (req, res) => {
+  const { otp } = req.body;
+  Token.findOne({ token: otp }, (err, token) => {
+    if (!token) return res.status(400).json(helper.errorResponse(400, true, 'Incorrect Token', 'Non-Existing Error'));
+
+    // If we found a token, find a matching user
+    return User.findOne({ _id: token.user_id }, (erro, user) => {
+      const doc = user;
+      if (!doc) res.status(400).json(helper.errorResponse(400, true, 'User doesn\'t exist!', 'Non-Existing Error'));
+      if (doc.isVerified) res.status(400).json(helper.errorResponse(400, true, 'User is already verified', 'Already Verified Error'));
+
+      // Verify and save the user
+      doc.isVerified = true;
+      Token.findOneAndDelete({ token: otp }, () => {
+        console.log('Token Deleted');
+      });
+      return user.save((error) => {
+        if (error) res.status(400).json(helper.errorResponse(400, true, 'Some error in saving user', 'Updating user error'));
+        return res.status(200).json(helper.successResponse(200, false, 'Account verified successfully', 'Successful Verification'));
+      });
+    });
+  });
+};
+
+exports.resendToken = (req, res) => {
+  const { email } = req.body;
+  User.findOne({ email }, (err, user) => {
+    // eslint-disable-next-line no-underscore-dangle
+    Token.findOneAndUpdate({ user_id: user._id }, { token: crypto.randomBytes(3).toString('hex').toUpperCase() }, { new: true }, (erro, token) => {
+      const mailOptions = {
+        from: 'Animabry Support <no-reply@animabry.com>',
+        to: email,
+        subject: `${token.token} is Animabry email verification passcode`,
+        html: `<p>Please enter this 6 digit code - ${token.token} to verify your email address! The token will expire after 10 minutes, hurry up & try not to resend tokens </p>`,
+      };
+      return helper.transporter.sendMail(mailOptions, (error) => {
+        if (error) res.status(400).json(helper.errorResponse(400, true, 'Sorry, mail wasn\'t sent!', error));
+        return res.status(200).json(helper.successResponse(200, false, 'Token resent', 'Email Verification Pending'));
+      });
+    });
   });
 };
 
 exports.login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email }, (error, user) => {
+  User.findOne({ email }, (err, user) => {
     if (!user) {
       return res.status(400).json(helper.errorResponse(400, true, 'User doesn\'t exist!', 'Non-Existing Error'));
+    }
+    if (!user.isVerified) {
+      const token = new Token({
+        // eslint-disable-next-line no-underscore-dangle
+        user_id: user._id,
+        token: crypto.randomBytes(3).toString('hex').toUpperCase(),
+      });
+      return token.save()
+        .then(() => {
+          const mailOptions = {
+            from: 'Animabry Support <no-reply@animabry.com>',
+            to: email,
+            subject: `${token.token} is Animabry email verification passcode`,
+            html: `<p>Please enter this 6 digit code - ${token.token} to verify your email address! The token will expire after 10 minutes, hurry up!</p>`,
+          };
+          return helper.transporter.sendMail(mailOptions, (error) => {
+            if (error) res.status(400).json(helper.errorResponse(400, true, 'Sorry, mail wasn\'t sent!', error));
+            return res.status(401).json(helper.successResponse(401, false, 'User not verified', 'Email Verification Pending'));
+          });
+        });
     }
     return bcrypt.compare(password, user.password)
       .then((result) => {
@@ -45,8 +125,8 @@ exports.login = (req, res) => {
             email: user.email,
           },
         };
-        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: config.get('jwtExpiry') }, (err, token) => {
-          if (err) res.status(400).json(helper.errorResponse(400, true, 'Error in token', 'Token Error'));
+        jwt.sign(payload, config.get('jwtSecret'), { expiresIn: config.get('jwtExpiry') }, (erro, token) => {
+          if (erro) res.status(400).json(helper.errorResponse(400, true, 'Error in token', 'Token Error'));
           res.status(200).json(helper.successResponse(200, false, 'Successfully logged in!',
             {
               token,
@@ -126,12 +206,11 @@ exports.sendResetToken = (req, res) => {
         if (error) res.status(400).json(helper.errorResponse(400, true, 'Error in saving token!', 'Unexpected Error'));
         // Send the mail
         const mailOptions = {
-          from: 'Animabry <no-reply@animabry.com>',
+          from: 'Animabry Support <no-reply@animabry.com>',
           to: email,
           subject: 'Password Reset',
           html: passwordReset(token.token, doc),
         };
-
         return helper.transporter.sendMail(mailOptions, (errorr) => {
           if (errorr) res.status(400).json(helper.errorResponse(400, true, 'Sorry, mail wasn\'t sent!', errorr));
           return res.status(200).json(helper.successResponse(200, false, `Mail sent successfully to ${doc.email}`, 'Email Sent!'));
@@ -169,7 +248,7 @@ exports.verifyTokenAndResetPassword = (req, res) => {
       return doc.save((errorr) => {
         if (errorr) res.status(400).json(helper.errorResponse(400, true, 'Error in saving user!', 'Unexpected Error'));
         const mailOptions = {
-          from: 'Animabry <no-reply@animabry.com>',
+          from: 'Animabry Support <no-reply@animabry.com>',
           to: doc.email,
           subject: 'Password Changed',
           html: passwordChanged(user),

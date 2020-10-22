@@ -1,9 +1,8 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { debounce, throttle } from 'lodash';
-import { alertInfo, isAuthenticated } from '../utils/helper';
-import { Card, InputSearch } from '../containers';
+import { alertInfo } from '../utils/helper';
+import { Card, InputSearch, Loader } from '../containers';
 
 const BASE_URL = '/api/v1/animals';
 
@@ -11,6 +10,7 @@ class Main extends React.Component {
   state = {
     animals: [],
     pagination: {},
+    loading: false,
     searchVal: '',
     searchValError: '',
     current_page: 1,
@@ -64,22 +64,25 @@ class Main extends React.Component {
 
   _getData = (current_page) => {
     const { animals, searchVal } = this.state;
+    this.setState({ loading: true });
     axios.get(!current_page
       ? `${BASE_URL}?search=${searchVal}`
       : `${BASE_URL}?search=${searchVal}&currentPage=${current_page}`,
     { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
       .then((data) => {
-        if (!data.error) {
-          if (!current_page) {
-            this.setState({ animals: data.data, pagination: data.pagination },
-              () => alertInfo('success', 'Data fetched successfully'));
-          } else {
-            this.setState({ animals: [...animals, ...data.data], pagination: data.pagination }, () => alertInfo('success', 'Data fetched successfully'));
-          }
+        this.setState({ loading: false });
+        if (!current_page) {
+          this.setState({ animals: data.data, pagination: data.pagination },
+            () => alertInfo('success', 'Data fetched successfully'));
+        } else {
+          this.setState({ animals: [...animals, ...data.data], pagination: data.pagination }, () => alertInfo('success', 'Data fetched successfully'));
         }
       })
-      .catch((err) => alertInfo('error', err.response.data.message));
+      .catch((err) => {
+        this.setState({ loading: false });
+        alertInfo('error', err.response.data.message);
+      });
   }
 
   _deleteAnimal = (id) => {
@@ -90,8 +93,7 @@ class Main extends React.Component {
           this.setState({ animals: animals.filter((animal) => animal._id !== id) }, () => alertInfo('success', 'Data fetched successfully'));
         }
       })
-      .catch((err) => {
-        console.log('err.response', err.response);
+      .catch(() => {
         alertInfo('error', 'Could not delete animal');
       });
   }
@@ -100,26 +102,26 @@ class Main extends React.Component {
     axios.get(`${BASE_URL}/${id}/togglelike`, { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
       .then((data) => {
-        if (!data.error) {
-          const animal_id = document.getElementById(data.data._id);
-          if (!data.data.likes.includes(JSON.parse(localStorage.getItem('user')).id)) {
-            animal_id.classList.remove('btn-danger');
-            animal_id.classList.add('btn-outline-danger');
-          } else {
-            animal_id.classList.add('btn-danger');
-            animal_id.classList.remove('btn-outline-danger');
-          }
-          animal_id.lastElementChild.innerHTML = data.data.likesCount;
-          return alertInfo('success', 'Toggled post');
+        const animal_id = document.getElementById(data.data._id);
+        if (!data.data.likes.includes(JSON.parse(localStorage.getItem('user')).id)) {
+          animal_id.classList.remove('btn-danger');
+          animal_id.classList.add('btn-outline-danger');
+        } else {
+          animal_id.classList.add('btn-danger');
+          animal_id.classList.remove('btn-outline-danger');
         }
+        animal_id.lastElementChild.innerHTML = data.data.likesCount;
+        return alertInfo('success', 'Toggled post');
       })
       .catch(() => alertInfo('error', 'Could not toggle Like'));
   }
 
   render() {
-    const { animals, searchVal, searchValError } = this.state;
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
+    const {
+      animals, searchVal, searchValError, loading,
+    } = this.state;
+    if (loading) {
+      return <Loader fullpage />;
     }
     return (
       <main>
@@ -131,13 +133,12 @@ class Main extends React.Component {
               handleChange={this._handleChange}
             />
             <div className="row">
-              {animals.length === 0
-                && (
-                  <div className="col-12 d-flex flex-column align-items-center justify-content-center">
-                    <img src="../assets/svg/no-data.svg" alt="no-data" className="img img-fluid" width="400" />
-                    <p className="no-data-text">Oops!! No Animals here!</p>
-                  </div>
-                )}
+              {animals.length === 0 && (
+                <div className="col-12 d-flex flex-column align-items-center justify-content-center">
+                  <img src="../assets/svg/no-data.svg" alt="no-data" className="img img-fluid" width="400" />
+                  <p className="no-data-text">Oops!! No Animals here!</p>
+                </div>
+              )}
               {animals.length > 0 && animals.map((animal) => (
                 <Card
                   type="home"

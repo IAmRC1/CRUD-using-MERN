@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
-import { alertInfo, isAuthenticated } from '../utils/helper';
+import { alertInfo } from '../utils/helper';
 import { EyeOpen, EyeClosed } from '../assets/svg';
 
 const BASE_URL = '/api/v1/auth';
@@ -34,7 +34,8 @@ class ChangePassword extends React.Component {
 
   _submitForm = (values, { setSubmitting }) => {
     const user = { password: values.password };
-    const { match, history } = this.props;
+    const { history } = this.props;
+    const { match } = this.props;
     axios.post(`${BASE_URL}/resetpassword/${match.params.token}`, user)
       .then((res) => res.data)
       .then(() => {
@@ -65,9 +66,7 @@ class ChangePassword extends React.Component {
   render() {
     const { isPasswordVisible } = this.state;
     const { match } = this.props;
-    if (isAuthenticated()) {
-      return <Redirect to="/home" />;
-    } if (match.params.token.length !== 24) {
+    if (match.params.token.length !== 24) {
       return <Redirect to="/resetpassword" />;
     }
     return (
@@ -76,7 +75,7 @@ class ChangePassword extends React.Component {
         validate={this._validate}
         onSubmit={(values, { setSubmitting }) => this._submitForm(values, { setSubmitting })}
       >
-        {({ isSubmitting, values }) => (
+        {({ isSubmitting, values, dirty }) => (
           <Form noValidate className="form-signup py-5 login-form">
             <h1 className="h3 mb-3 text-center text-uppercase">Reset Password</h1>
             <ErrorMessage name="password" component="div" className="error" />
@@ -94,7 +93,7 @@ class ChangePassword extends React.Component {
             <button
               className="btn btn-lg btn-primary btn-block"
               type="submit"
-              disabled={isSubmitting || Object.values(values).includes('')}
+              disabled={isSubmitting || !dirty}
             >
               {`Updat${isSubmitting ? 'ing' : 'e'}`}
             </button>

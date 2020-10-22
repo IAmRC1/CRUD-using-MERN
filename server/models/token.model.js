@@ -16,7 +16,7 @@ const tokenSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now,
-    expires: 600,
+    expires: 600, // 10 minutes = 600
   },
 });
 

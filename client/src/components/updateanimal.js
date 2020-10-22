@@ -1,11 +1,10 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import axios from 'axios';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
 import {
-  alertInfo, isAuthenticated, inputTextArea, inputFile,
+  alertInfo, inputTextArea, inputFile,
 } from '../utils/helper';
 
 const maxChar = 250;
@@ -74,6 +73,7 @@ class UpdateAnimal extends React.Component {
   }
 
   _submitForm = (values, { setSubmitting }) => {
+    const { history } = this.props;
     const animal = new FormData();
     animal.append('name', values.name);
     animal.append('category', values.category);
@@ -81,27 +81,22 @@ class UpdateAnimal extends React.Component {
     animal.append('description', values.description);
     axios.post('/api/v1/animals/:id', animal, { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
-      .then((data) => {
-        if (!data.error) {
-          alertInfo('success', 'Animal updated successfully');
-          setSubmitting(false);
-          return this.props.history.push('/home');
-        }
+      .then(() => {
+        alertInfo('success', 'Animal updated successfully');
+        setSubmitting(false);
+        return history.push('/home');
       })
       .catch((err) => {
         setSubmitting(false);
         const { errors } = err.response.data;
-        errors.map((err) => {
-          const keys = Object.keys(err);
-          return alertInfo('error', err[keys]);
+        errors.map((erro) => {
+          const keys = Object.keys(erro);
+          return alertInfo('error', erro[keys]);
         });
       });
   }
 
   render() {
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
-    }
     return (
       <main className="container py-5 form-create">
         <Formik

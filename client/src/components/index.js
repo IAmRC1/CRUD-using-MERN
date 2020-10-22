@@ -10,6 +10,7 @@ import Profile from './profile';
 import UpdateProfile from './updateprofile';
 import ResetPassword from './resetpassword';
 import ChangePassword from './changepassword';
+import Verify from './verifyemail';
 
 export {
   SignUp,
@@ -24,4 +25,5 @@ export {
   UpdateProfile,
   ResetPassword,
   ChangePassword,
+  Verify,
 };

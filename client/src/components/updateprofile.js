@@ -1,14 +1,14 @@
 import React from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
 import { capitalize } from 'lodash';
 import { Avatar, Upload, Cross } from '../assets/svg';
 import {
-  alertInfo, isAuthenticated, inputTextArea, timeAgo,
+  alertInfo, inputTextArea, timeAgo,
 } from '../utils/helper';
+import { Loader } from '../containers';
 
 const BASE_URL = '/api/v1/auth';
 const maxChar = 100;
@@ -17,6 +17,7 @@ class UpdateProfile extends React.Component {
   state = {
     user: {},
     image: null,
+    loading: false,
   }
 
   componentDidMount() {
@@ -25,26 +26,27 @@ class UpdateProfile extends React.Component {
 
   _getProfile = () => {
     const { id } = JSON.parse(localStorage.getItem('user'));
+    this.setState({ loading: true });
     axios.get(`${BASE_URL}/${id}`,
       { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
       .then((data) => {
-        if (!data.error) {
-          this.setState({
-            user: {
-              id: data.data._id,
-              username: data.data.username,
-              email: data.data.email,
-              firstname: capitalize(data.data.firstname),
-              lastname: capitalize(data.data.lastname),
-              bio: data.data.bio,
-              image: data.data.image,
-              createdAt: data.data.createdAt,
-            },
-          });
-        }
+        this.setState({
+          user: {
+            id: data.data._id,
+            username: data.data.username,
+            email: data.data.email,
+            firstname: capitalize(data.data.firstname),
+            lastname: capitalize(data.data.lastname),
+            bio: data.data.bio,
+            image: data.data.image,
+            createdAt: data.data.createdAt,
+          },
+          loading: false,
+        });
       })
       .catch((err) => {
+        this.setState({ loading: false });
         alertInfo('error', err.response.data.message);
       });
   }
@@ -87,6 +89,7 @@ class UpdateProfile extends React.Component {
 
   _submitForm = (values, { setSubmitting }) => {
     const { id } = JSON.parse(localStorage.getItem('user'));
+    const { history } = this.props;
     const updatedUser = new FormData();
     updatedUser.append('firstname', values.firstname);
     updatedUser.append('lastname', values.lastname);
@@ -95,11 +98,9 @@ class UpdateProfile extends React.Component {
     axios.patch(`${BASE_URL}/${id}`, updatedUser,
       { headers: { token: localStorage.getItem('token') } })
       .then((res) => res.data)
-      .then((data) => {
-        if (!data.error) {
-          setSubmitting(false);
-          return this.props.history.push('/profile');
-        }
+      .then(() => {
+        setSubmitting(false);
+        return history.push('/profile');
       })
       .catch((err) => {
         setSubmitting(false);
@@ -129,9 +130,9 @@ class UpdateProfile extends React.Component {
   }
 
   render() {
-    const { user, image } = this.state;
-    if (!isAuthenticated()) {
-      return <Redirect to="/login" />;
+    const { user, image, loading } = this.state;
+    if (loading) {
+      return <Loader fullpage />;
     }
     return (
       <div className="edit-profile py-5 bg-light">
@@ -144,14 +145,14 @@ class UpdateProfile extends React.Component {
               onSubmit={(values, { setSubmitting }) => this._submitForm(values, { setSubmitting })}
             >
               {({
-                isSubmitting, values, dirty, setFieldValue,
+                isSubmitting, dirty, setFieldValue,
               }) => (
                 <Form noValidate>
                   <div className="user-section-block">
                     <div className="user-image">
                       <img
                         crossOrigin="anonymous"
-                        src={user && user.image && user.image !== '' ? user.image : Avatar}
+                        src={user && user.image && user.image !== '' && user.image !== 'undefined' ? user.image : Avatar}
                         alt="user"
                         className="img"
                         id="server-image"
@@ -235,7 +236,7 @@ class UpdateProfile extends React.Component {
                     <button
                       type="submit"
                       className="btn btn-block btn-primary text-uppercase mt-3"
-                      disabled={isSubmitting || Object.values(values).includes('') || !dirty}
+                      disabled={isSubmitting || !dirty}
                     >
                       {`Updat${isSubmitting ? 'ing' : 'e'}`}
                     </button>

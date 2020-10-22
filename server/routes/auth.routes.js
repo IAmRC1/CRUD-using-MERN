@@ -7,6 +7,10 @@ const imageParser = require('../utils/multer-config');
 
 router.post('/register', validationType('register'), validate, controller.register);
 
+router.post('/verifyemail', validationType('otp'), validate, controller.verifyEmail);
+
+router.post('/resendtoken', validationType('email'), validate, controller.resendToken);
+
 router.post('/login', validationType('login'), validate, controller.login);
 
 router.post('/resetpassword', validationType('reset-password'), validate, controller.sendResetToken);
