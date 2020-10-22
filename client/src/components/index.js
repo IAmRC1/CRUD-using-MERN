@@ -11,6 +11,7 @@ import UpdateProfile from './updateprofile';
 import ResetPassword from './resetpassword';
 import ChangePassword from './changepassword';
 import Verify from './verifyemail';
+import NotFound from './notfound';
 
 export {
   SignUp,
@@ -26,4 +27,5 @@ export {
   ResetPassword,
   ChangePassword,
   Verify,
+  NotFound,
 };

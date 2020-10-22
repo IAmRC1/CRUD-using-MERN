@@ -3,6 +3,7 @@ import axios from 'axios';
 import { debounce, throttle } from 'lodash';
 import { alertInfo } from '../utils/helper';
 import { Card, InputSearch, Loader } from '../containers';
+import { NoData } from '../assets/svg';
 
 const BASE_URL = '/api/v1/animals';
 
@@ -56,7 +57,7 @@ class Main extends React.Component {
       if (searchVal.length === 0 || searchVal.length > 2) {
         this.setState({ searchValError: '' });
         this._debouncedGetData();
-      } else if (searchVal.length > 0 || searchVal.length < 3) {
+      } else if (searchVal.length === 1 || searchVal.length === 2) {
         this.setState({ searchValError: 'Please type atleast 3 words to search.' });
       }
     });
@@ -135,7 +136,7 @@ class Main extends React.Component {
             <div className="row">
               {animals.length === 0 && (
                 <div className="col-12 d-flex flex-column align-items-center justify-content-center">
-                  <img src="../assets/svg/no-data.svg" alt="no-data" className="img img-fluid" width="400" />
+                  <img src={NoData} alt="no-data" className="img img-fluid" width="400" />
                   <p className="no-data-text">Oops!! No Animals here!</p>
                 </div>
               )}

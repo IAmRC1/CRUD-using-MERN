@@ -554,3 +554,12 @@ footer p {
   background-color: #ccc68d;
   animation-delay: calc(1000ms / 10 * -3);
 }
+
+.not-found .ques-circle{
+  width: 3rem;
+  animation: notfound 3s linear infinite;
+}
+@keyframes notfound {
+  from {transform: rotate(0deg);}
+  to {transform: rotate(360deg);}
+}
