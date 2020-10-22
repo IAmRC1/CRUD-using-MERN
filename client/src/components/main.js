@@ -49,17 +49,16 @@ class Main extends React.Component {
 
   _handleChange = (e) => {
     const val = e.target.value;
-    const { searchVal } = this.state;
     if (/(^\s+|\s+$)/g.test(val)) {
       return this.setState({ searchValError: 'Can\'t have spaces at start or end.' });
     }
     return this.setState({ searchVal: val }, () => {
-      if (searchVal.length === 0 || searchVal.length > 2) {
-        this.setState({ searchValError: '' });
-        this._debouncedGetData();
-      } else if (searchVal.length === 1 || searchVal.length === 2) {
-        this.setState({ searchValError: 'Please type atleast 3 words to search.' });
+      if (val.length === 0 || val.length > 2) {
+        return this.setState({ searchValError: '' }, () => {
+          this._debouncedGetData();
+        });
       }
+      return this.setState({ searchValError: 'Please type atleast 3 words to search.' });
     });
   }
 

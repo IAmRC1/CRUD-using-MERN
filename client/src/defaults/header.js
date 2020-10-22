@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -25,55 +26,58 @@ class Header extends React.Component {
   render() {
     const { location } = this.props;
     return (
+
       <header>
-        <div className="navbar navbar-dark bg-dark shadow-lg fixed-top" id="navbarMain">
-          <div className="container d-flex justify-content-between">
-            <Link to={isAuthenticated() ? '/home' : '#!'} className="navbar-brand d-flex align-items-center mr-0">
-              <img src={Bug} alt="bug" className="nav-icons" />
-              <strong className="pl-2">Animabry</strong>
-            </Link>
-            <div className="d-flex align-items-center nav-btn">
-              {(location.pathname === '/home' || location.pathname === '/profile')
+        <div className="navbar navbar-dark bg-dark shadow-lg fixed-top p-0" id="navbarMain">
+          <div className="container-fluid py-2 px-3">
+            <div className="container">
+              <Link to={isAuthenticated() ? '/home' : '#!'} className="navbar-brand d-flex align-items-center mr-0">
+                <img src={Bug} alt="bug" className="nav-icons" />
+                <strong className="pl-2">Animabry</strong>
+              </Link>
+              <div className="d-flex align-items-center nav-btn">
+                {(location.pathname === '/home' || location.pathname === '/profile')
+                    && (
+                      <Link to="/add" data-tooltip="Add Animal" data-tooltip-location="bottom">
+                        <img src={Plus} alt="plus" className="nav-icons" />
+                      </Link>
+                    )}
+
+                {isAuthenticated() && location.pathname !== '/profile'
                   && (
-                    <Link to="/add" data-tooltip="Add Animal" data-tooltip-location="bottom">
-                      <img src={Plus} alt="plus" className="nav-icons" />
+                    <Link to="/profile" data-tooltip="Profile" data-tooltip-location="bottom">
+                      <img src={Person} alt="profile" className="nav-icons" />
                     </Link>
                   )}
 
-              {isAuthenticated() && location.pathname !== '/profile'
-                && (
-                  <Link to="/profile" data-tooltip="Profile" data-tooltip-location="bottom">
-                    <img src={Person} alt="profile" className="nav-icons" />
-                  </Link>
-                )}
+                <a
+                  href="#!"
+                  role="button"
+                  onClick={this._toggleTheme}
+                  data-tooltip={`${theme === 'dark' ? 'Light Mode' : 'Dark Mode'}`}
+                  data-tooltip-location="bottom"
+                >
+                  <img
+                    src={theme === 'dark' ? Sun : Moon}
+                    alt={theme === 'dark' ? 'light mode' : 'dark mode'}
+                    className="nav-icons"
+                  />
+                </a>
 
-              <a
-                href="#!"
-                role="button"
-                onClick={this._toggleTheme}
-                data-tooltip={`${theme === 'dark' ? 'Light Mode' : 'Dark Mode'}`}
-                data-tooltip-location="bottom"
-              >
-                <img
-                  src={theme === 'dark' ? Sun : Moon}
-                  alt={theme === 'dark' ? 'light mode' : 'dark mode'}
-                  className="nav-icons"
-                />
-              </a>
-
-              {isAuthenticated()
-                  && (
-                    <a
-                      href="#!"
-                      role="button"
-                      data-tooltip="Log Out"
-                      data-tooltip-location="bottom"
-                      data-toggle="modal"
-                      data-target="#logOutModal"
-                    >
-                      <img src={SignOut} alt="sign out" className="nav-icons" />
-                    </a>
-                  )}
+                {isAuthenticated()
+                    && (
+                      <a
+                        href="#!"
+                        role="button"
+                        data-tooltip="Log Out"
+                        data-tooltip-location="bottom"
+                        data-toggle="modal"
+                        data-target="#logOutModal"
+                      >
+                        <img src={SignOut} alt="sign out" className="nav-icons" />
+                      </a>
+                    )}
+              </div>
             </div>
           </div>
         </div>

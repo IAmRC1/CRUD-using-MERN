@@ -58,27 +58,6 @@ main, .form-signup, .form-create, .profile{
 .navbar-toggler:focus{
   outline: none;
 }
-.jumbotron {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-  margin-bottom: 0;
-  background-color: #fff;
-}
-@media (min-width: 768px) {
-  .jumbotron {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
-  }
-}
-.jumbotron p:last-child {
-  margin-bottom: 0;
-}
-.jumbotron h1 {
-  font-weight: 300;
-}
-.jumbotron .container {
-  max-width: 40rem;
-}
 footer {
   padding-top: 3rem;
   padding-bottom: 3rem;
