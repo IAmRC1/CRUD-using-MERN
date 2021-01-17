@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
@@ -42,25 +42,24 @@ class SignIn extends React.Component {
         setSubmitting(false);
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
+        console.log(data);
         return history.push('/home');
       })
       .catch((err) => {
         setSubmitting(false);
         if (err.response.status === 401) {
-          return (
-            <Redirect to={{
-              pathname: '/verify',
-              state: { email: values.email },
-            }}
-            />
-          );
+          return history.push({
+            pathname: '/verify',
+            state: { email: values.email },
+          });
         }
         return alertInfo('error', err.response.data.message);
       });
   }
 
   _togglePasswordView = () => {
-    this.setState({ isPasswordVisible: !this.state.isPasswordVisible });
+    const { isPasswordVisible } = this.state;
+    this.setState({ isPasswordVisible: !isPasswordVisible });
     const password = document.getElementById('loginPassword');
     if (password.type === 'password') {
       password.type = 'text';
@@ -99,7 +98,7 @@ class SignIn extends React.Component {
               type="submit"
               disabled={isSubmitting || !dirty || !isValid}
             >
-              {`Submit${isSubmitting ? 'ing' : ''}`}
+              {`Submit${isSubmitting ? 'ting' : ''}`}
             </button>
             <p className="text-center text-muted mt-2 mb-2">
               Don&apos;t have an account?

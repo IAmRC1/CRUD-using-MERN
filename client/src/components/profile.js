@@ -52,7 +52,6 @@ class Profile extends React.Component {
         } else {
           this.setState({
             animals: [...animals, ...data.data],
-            pagination: data.pagination,
           }, () => alertInfo('success', 'User fetched successfully'));
         }
       })
@@ -60,6 +59,10 @@ class Profile extends React.Component {
         this.setState({ loading: false });
         alertInfo('error', err.response.data.message);
       });
+  }
+
+  _deleteAnimal = () => {
+    // console.log('hello', id);
   }
 
   render() {

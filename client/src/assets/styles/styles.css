@@ -12,6 +12,9 @@ body {
 a:hover{ 
   text-decoration: none;
 }
+a[role="button"]:focus{
+  box-shadow: none !important;
+}
 .error{ 
   margin: 0;
   color: #cd5c5c;

@@ -20,4 +20,4 @@ const apiResponse = async (args) => axios({
     alertInfo('error', alert.config);
   });
 
-export { apiResponse };
+export default apiResponse;

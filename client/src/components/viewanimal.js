@@ -76,7 +76,8 @@ class ViewAnimal extends React.Component {
             >
               <img
                 crossOrigin="anonymous"
-                src={post.submittedBy && post.submittedBy.image !== '' ? post.submittedBy.image : Avatar}
+                /* eslint-disable max-len */
+                src={post.submittedBy && post.submittedBy.image && post.submittedBy.image !== 'undefined' ? post.submittedBy.image : Avatar}
                 alt="user"
                 className="img"
               />

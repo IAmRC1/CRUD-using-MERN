@@ -122,3 +122,7 @@ exports.toggleLike = (req, res) => {
     res.status(200).json(helper.successResponse(200, false, 'Animal likes toggled successfully!', doc));
   });
 };
+
+exports.addComment = (req, res) => {
+  res.send('hii');
+};

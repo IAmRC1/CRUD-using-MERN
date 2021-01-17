@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Formik, Form, Field, ErrorMessage,
 } from 'formik';
@@ -48,17 +48,15 @@ class SignUp extends React.Component {
 
   _submitForm = (values) => {
     const user = { username: values.username, email: values.email, password: values.password };
+    const { history } = this.props;
     axios.post(`${BASE_URL}/register`, user)
       .then((res) => res.data)
       .then(() => {
         alertInfo('success', 'Successfull Registration!');
-        return (
-          <Redirect to={{
-            pathname: '/verify',
-            state: { email: values.email },
-          }}
-          />
-        );
+        return history.push({
+          pathname: '/verify',
+          state: { email: values.email },
+        });
       })
       .catch((err) => {
         if (err.response.status === 400) {

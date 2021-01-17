@@ -17,4 +17,6 @@ router.delete('/:id', auth, controller.deleteOne);
 
 router.get('/:id/togglelike', auth, controller.toggleLike);
 
+router.post(':id/addComment', auth, controller.addComment);
+
 module.exports = router;
